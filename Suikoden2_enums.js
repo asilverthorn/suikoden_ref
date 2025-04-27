@@ -692,7 +692,7 @@ RUNES: {
     2: "Rage Orb",
     3: "Water Orb",
     4: "Flowing Orb",
-    5: "Wind Orb", //correct
+    5: "Wind Orb", 
     6: "Cyclone Orb",
     7: "Earth Orb",
     8: "Mother Earth Orb",
@@ -700,15 +700,15 @@ RUNES: {
     10: "Thunder Orb",
     11: "Soul Eater",
     12: "Resurrection Orb",
-    13: "Bright Shield Orb", //correct
-    14: "Black Sword Orb", //correct
+    13: "Bright Shield Orb",
+    14: "Black Sword Orb",
     15: "Blinking Orb",
     16: "Darkness Orb",
-    17: "Blue Gate Orb", //correct
+    17: "Blue Gate Orb",
     18: "White Saint Orb",
     19: "Titan Orb",
     20: "Viper Orb",
-    21: "Great Hawk Orb", //correct
+    21: "Great Hawk Orb",
     22: "Lion Orb",
     23: "Kite Orb",
     24: "Unicorn Orb",
@@ -722,7 +722,7 @@ RUNES: {
     // jump
     39: "Gadget Orb",
     40: "Shrike Orb",
-    41: "Falcon Orb", //should be 41
+    41: "Falcon Orb",
     42: "Mayfly Orb",
     43: "Swallow Orb",
     44: "Fire Breath Orb",
@@ -733,7 +733,7 @@ RUNES: {
     49: "White Tiger Orb",
     50: "Howling Orb",
     51: "Spider Slay Orb",
-    52: "Angry Dragon Orb", //should be 52
+    52: "Angry Dragon Orb",
     53: "Twin Ring Orb",
     54: "Rabid Fang Orb",
     //jump
@@ -756,26 +756,26 @@ RUNES: {
     78: "Fire Sealing Orb",
     79: "Skunk Orb",
     80: "Firefly Orb",
-    81: "Medicine Orb", //this should be 81
+    81: "Medicine Orb",
     82: "Double-Edged Orb",
-    83: "Wizard Orb", //this should be 83
+    83: "Wizard Orb",
     84: "Warrior Orb",
     85: "Waking Orb",
     86: "Alertness Orb",
-    87: "Fury Orb", //this should be 87
+    87: "Fury Orb",
     88: "Violence Orb",
-    89: "Godspeed Orb", //this should be 89
+    89: "Godspeed Orb",
     // jump
     92: "Fire Lizard Orb",
     93: "Magic Drain Orb",
     94: "Hunter Orb",
     95: "Technique Orb",
     96: "Silence Orb",
-    97: "Poison Orb", //should be 97
+    97: "Poison Orb",
     98: "Knockdown Orb",
     99: "Sleep Orb",
     100: "Friendship Orb",
     101: "Solitude Orb",
-    102: "Kindness Orb", //should be 102
+    102: "Kindness Orb",
     103: "Exertion Orb",
 },

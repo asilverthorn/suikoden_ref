@@ -3,14 +3,14 @@
 - [Overview](#overview)
 - [eventForm table](#eventform-table)
 - [examples](#examples)
-	- [Zamza in Toto Inn](#zamza-in-toto-inn)
-	- [Hanna in Burned Toto](#hanna-in-burned-toto)
-	- [Genshu in Coronet](#genshu-in-coronet)
-	- [Tessai appearing in Kuskus](#tessai-appearing-in-kuskus)
-	- [Gantetsu in South Window](#gantetsu-in-south-window)
-		- [eventdat\[17\]](#eventdat17)
-		- [eventdat\[19\]](#eventdat19)
-	- [Long Chan Chan in Rockaxe](#long-chan-chan-in-rockaxe)
+  - [Zamza in Toto Inn](#zamza-in-toto-inn)
+  - [Hanna in Burned Toto](#hanna-in-burned-toto)
+  - [Genshu in Coronet](#genshu-in-coronet)
+  - [Tessai appearing in Kuskus](#tessai-appearing-in-kuskus)
+  - [Gantetsu in South Window](#gantetsu-in-south-window)
+    - [eventdat\[17\]](#eventdat17)
+    - [eventdat\[19\]](#eventdat19)
+  - [Long Chan Chan in Rockaxe](#long-chan-chan-in-rockaxe)
 - [Other references](#other-references)
 
 
@@ -18,17 +18,17 @@ This document captures how to parse the `eventdata.mapeventdat[?].eventdat[?].ev
 
 This document is based on reverse engineering the `EVENTCON$$EventFormTbl` function.
 
-The `eventForm` controls whether the associated eventCom commands execute. If it reaches the end of the eventForm without running into a `return 0`.
+The `eventForm` controls whether the associated eventCom commands execute: if it reaches the end of the eventForm without running into a `return 0`, then the eventCom will execute.
 
 `eventForm`s appear to be always executed in a loop while on the map in question.
 
 ## eventForm table
 
-Note: the "num params" column indicates the number of values that follow the eventForm cmd before the next eventForm cmd. By personal convention, I refer to them as param1 - param5.
+Note: the "num params" column indicates the number of values that follow the eventForm cmd before the next eventForm cmd. I refer to these params as param1 - param5.
 
 | `eventForm` cmd | num params | Notes |
 |------|----------|----------|
-| 0    |        0 | No-op; often followed by 255, 254 for `eventCom`s that always execute on a map |
+| 0    |        0 | No-op; often followed by 255, 254 for `eventCom`s that always execute |
 | 1    |        2 | Checks `px` (player x location) |
 | 2    |        2 | Checks `py` (player y location) |
 | 3    |        2 | Checks `event_flag` `!(event_flag[param1] & param2)` -- inverse logic of cmd 4 |
@@ -36,7 +36,7 @@ Note: the "num params" column indicates the number of values that follow the eve
 | 5    |        1 | Checks `EVENT_HUMAN[param1] `|
 | 6    |        1 | Checks `EVENTCON ewflg` against param1 |
 | 7    |        1 | Checks `EVENTCON ewflg` against param1 |
-| 8    |        1 | Checks `SYS_WORK pad_dat` bits; param1 has values 0-3 |
+| 8    |        1 | Checks `SYS_WORK pad_dat` bits, which are set based on direction; param1 has values 0-3 |
 | 9    |        1 | Checks a value in `EVENT_HUMAN[0]`, `EVENTCON.targetMoveDir`, and `EVENTCON.gSlopeMove` |
 | 10   |        1 | Checks `px` < param1 |
 | 11   |        1 | Checks `py` < param1 |
@@ -49,9 +49,9 @@ Note: the "num params" column indicates the number of values that follow the eve
 | 18   |        2 | Checks if param2 * 100 <= party gold (potch) |
 | 19   |        1 | Checks `!(event_flag[255] & param1)` -- inverse logic of cmd 20 |
 | 20   |        1 | Checks `event_flag[255] & param1` -- inverse logic of cmd 19|
-| 21   |        1 | Checks `SYS_WORK pad_dat` bits; param1 has values 0-3 |
+| 21   |        1 | Checks `SYS_WORK pad_dat` bits, which are set based on direction; param1 has values 0-3 |
 | 22   |        1 | Checks `EVENT_HUMAN[0]` field against param1 |
-| 23   |        2 | Checks `G2_cha_flag(param2, param1)` <br/> param1 = character number (`chano`) <br /> param2 = mode |
+| 23   |        2 | Checks `G2_cha_flag(param2, param1)` <br/> param1 = character number (`chano`) <br /> param2 = mode: `4` = character recruited, not dead or on leave, not in party; `9` = character in party |
 | 24   |        2 | Checks `G2_cha_flag(param2, param1)` <br/> param1 = character number (`chano`) <br /> param2 = mode |
 | 25   |        1 | Checks random number between 0 and param1 |
 | 26   |        5 | Checks `G2_item_num2` |
@@ -61,7 +61,7 @@ Note: the "num params" column indicates the number of values that follow the eve
 | 30   |        2 | Checks `map_in_out_flag[param1] & param2` |
 | 31   |        4 | Checks `px` |
 | 32   |        4 | Checks `py` |
-| 33   |        2 | Checks `GAME_WORK base_lv` (Castle level) against param2. <br /> param1 == 0: checks param2 != `base_lv` <br /> param1 == 1: checks `base_lv` < param2 <br /> param1: == 2 checks `base_lv` > param2|
+| 33   |        2 | Checks `GAME_WORK base_lv` (Castle level) against param2. <br /> param1 == 0: checks param2 == `base_lv` <br /> param1 == 1: checks `base_lv` < param2 <br /> param1 == 2: checks `base_lv` > param2|
 | 34   |        2 | Checks `GAME_WORK hon_flag` |
 | 35   |        2 | Checks `GAME_WORK hon_flag` |
 | 36   |        3 | Checks `EVENT_HUMAN[param2]` |
