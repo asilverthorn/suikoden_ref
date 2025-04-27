@@ -14,14 +14,14 @@ Note: the "num params" column indicates the number of values that follow the eve
 
 | `eventForm` cmd | num params | Notes |
 |------|----------|----------|
-| 0    |        0 | No-op; often followed by 255, 254 for eventComs that always execute on a map |
+| 0    |        0 | No-op; often followed by 255, 254 for `eventCom`s that always execute on a map |
 | 1    |        2 | Checks `px` (player x location) |
 | 2    |        2 | Checks `py` (player y location) |
 | 3    |        2 | Checks `event_flag` `!(event_flag[param1] & param2)` -- inverse logic of cmd 4 |
 | 4    |        2 | Checks `event_flag` `event_flag[param1] & param2` -- inverse logic of cmd 3 |
 | 5    |        1 | Checks `EVENT_HUMAN[param1] `|
-| 6    |        1 | Compare param1 against `EVENTCON ewflg` |
-| 7    |        1 | Compare param1 against `EVENTCON ewflg` |
+| 6    |        1 | Checks `EVENTCON ewflg` against param1 |
+| 7    |        1 | Checks `EVENTCON ewflg` against param1 |
 | 8    |        1 | Checks `SYS_WORK pad_dat` bits; param1 has values 0-3 |
 | 9    |        1 | Checks a value in `EVENT_HUMAN[0]`, `EVENTCON.targetMoveDir`, and `EVENTCON.gSlopeMove` |
 | 10   |        1 | Checks `px` < param1 |
@@ -30,15 +30,15 @@ Note: the "num params" column indicates the number of values that follow the eve
 | 13   |        1 | Checks `py` > param1 |
 | 14   |        3 | Checks `EVENTCON.pnin`; param1 indicates an `EVENT_HUMAN` index |
 | 15   |        3 | Checks `EVENTCON.pnin`; param1 indicates an `EVENT_HUMAN` index |
-| 16   |        2 | Checks if a character (by `chano`) is in party (param2) |
-| 17   |        0 | Just returns 0 |
+| 16   |        2 | Checks if a character (by `chano`) is in party (param2). param1's use (0 or 1) is unknown |
+| 17   |        0 | Default case -- just returns 0 |
 | 18   |        2 | Checks if param2 * 100 <= party gold (potch) |
 | 19   |        1 | Checks `!(event_flag[255] & param1)` -- inverse logic of cmd 20 |
 | 20   |        1 | Checks `event_flag[255] & param1` -- inverse logic of cmd 19|
 | 21   |        1 | Checks `SYS_WORK pad_dat` bits; param1 has values 0-3 |
 | 22   |        1 | Checks `EVENT_HUMAN[0]` field against param1 |
-| 23   |        2 | Checks `G2_cha_flag(param2, param1)` <br/> param2 = mode <br/> param1 = character number |
-| 24   |        2 | Checks `G2_cha_flag(param2, param1)` <br/> param2 = mode <br/> param1 = character number |
+| 23   |        2 | Checks `G2_cha_flag(param2, param1)` <br/> param1 = character number (`chano`) <br /> param2 = mode |
+| 24   |        2 | Checks `G2_cha_flag(param2, param1)` <br/> param1 = character number (`chano`) <br /> param2 = mode |
 | 25   |        1 | Checks random number between 0 and param1 |
 | 26   |        5 | Checks `G2_item_num2` |
 | 27   |        2 | Checks `GAME_WORK t_box_flag[param1] & param2` |
@@ -47,7 +47,7 @@ Note: the "num params" column indicates the number of values that follow the eve
 | 30   |        2 | Checks `map_in_out_flag[param1] & param2` |
 | 31   |        4 | Checks `px` |
 | 32   |        4 | Checks `py` |
-| 33   |        2 | Checks `GAME_WORK base_lv` (Castle level) against param2. <br /> param1 == 0 checks param2 != `base_lv` <br /> param1 == 1 checks `base_lv` < param2 <br /> param1 == 2 checks `base_lv` > param2|
+| 33   |        2 | Checks `GAME_WORK base_lv` (Castle level) against param2. <br /> param1 == 0: checks param2 != `base_lv` <br /> param1 == 1: checks `base_lv` < param2 <br /> param1: == 2 checks `base_lv` > param2|
 | 34   |        2 | Checks `GAME_WORK hon_flag` |
 | 35   |        2 | Checks `GAME_WORK hon_flag` |
 | 36   |        3 | Checks `EVENT_HUMAN[param2]` |
@@ -55,7 +55,7 @@ Note: the "num params" column indicates the number of values that follow the eve
 | 38   |        2 | Checks `G2_pamem_num(0)` and `(4)` |
 | 39   |        4 | Unknown; could be variable length (if param3 == 0, it doesn't read param4)   |
 | 40   |        2 | Checks `GAME_WORK shop_data.event_no` against param2 |
-| 255  |        1 | param1 is always 254; if it reaches this `eventForm` cmd, it will start executing the `eventCom` via a return 1 |
+| 255  |        1 | End of eventForm. param1 is always 254; if it reaches this `eventForm` cmd, it will start executing the `eventCom` via a return 1 |
 
 
 ## examples
@@ -138,6 +138,160 @@ vc18.json contains multiple events that enable recruitment of Genshu if you are 
               47, //Genshu
               30, //done
               ...
+```
+
+### Tessai appearing in Kuskus
+
+vd01's `mapeventdat[1].eventdat[61]` contains the eventCom that causes Tessai (epersondat index 12) to appear in Kuskus.
+
+Based on diffs from https://www.nexusmods.com/suikoden1and2hdremaster/mods/16?tab=files
+
+Normal:
+
+```
+            "eventForm": [
+              3,   //cmd: event_flag check
+              128, //event flag number
+              1,   //param2: comparison value
+              4,   //cmd: event_flag check
+              151, //event flag number
+              64,  //param2: comparison value
+              33,  //cmd: base level check
+              1,   // param1: base_lv < param2
+              2,   // param2: 2
+              24,  //cmd: check G2_cha_flag
+              110, // param1 (charno): Tessai
+              2,   // param2 (mode)
+              255, //end
+              254
+            ],
+```
+
+Recruitment Patch diffs:
+
+```
+            "eventForm": [
+              0, //cmd: no-op
+              0, //cmd: no-op
+              0, //cmd: no-op
+              4,
+              151,
+              64,
+              33,
+              1,
+              2,
+              24,
+              110,
+              2,
+              255,
+              254
+            ],
+```
+
+### Gantetsu in South Window
+
+vd03 contains the eventComs that allow recruitment of Gantetsu
+
+Based on diffs from https://www.nexusmods.com/suikoden1and2hdremaster/mods/16?tab=files
+
+#### eventdat[17]
+Normal `mapeventdat[0].eventdat[17]`:
+
+```
+            "eventForm": [
+              4,  //cmd: event_flag check
+              202,
+              4,
+              4,  //cmd: event_flag check
+              91,
+              32,
+              5,  //cmd: unknown
+              9,
+              24,
+              70,
+              2,
+              255, //done
+              254
+            ],
+```
+
+Recruitment Patch:
+
+```
+            "eventForm": [
+              0, //cmd: no-op
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,  
+              254 //Not a Command -- this will cause it to return 0 and not execute the eventCom
+            ],
+```
+
+#### eventdat[19]
+
+Normal `mapeventdat[0].eventdat[18]` and `mapeventdat[0].eventdat[19]`:
+
+```
+            "eventForm": [
+              3, //event_flag check
+              202,
+              4,
+              ...
+            ],
+```
+
+Recruitment Patch that inverses just the first event_flag check in each:
+
+```
+            "eventForm": [
+              4, //cmd: event_flag check
+              202,
+              4,
+              ...
+            ],
+```
+
+### Long Chan Chan in Rockaxe
+
+vi01 contains the eventComs that cause LC Chan to appear in Rockaxe. He normally doesn't appear there when you first go to Rockaxe.
+
+Based on diffs from https://www.nexusmods.com/suikoden1and2hdremaster/mods/16?tab=files
+
+Normal `mapeventdat[1].eventdat[0]`:
+
+```
+            "eventForm": [
+              33,  //cmd: check base_lev
+              2,   // param1: base_lv > param2
+              2,   // param2: base_lv 2
+              16,  //cmd: check for character in party
+              0,   // param1: continue flag
+              143, // param2: chano 143 = ??? (not a character)
+              ...
+            ],
+```
+(this original chano check is odd, since 143 isn't a chano you can ever have. Possibly a bug in the original code?)
+
+Recruitment Patch that cuases him to appear earlier:
+
+```
+            "eventForm": [
+              33,
+              2,
+              2,
+              16, //cmd: check for character in party
+              0,  // param1: continue flag
+              68, // param2: chano 68 = Wakaba
+              ...
+            ],
 ```
 
 ## Other references
