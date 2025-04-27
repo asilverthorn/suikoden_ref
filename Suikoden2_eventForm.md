@@ -44,7 +44,7 @@ Note: the "num params" column indicates the number of values that follow the eve
 | 13   |        1 | Checks `py` > param1 |
 | 14   |        3 | Checks `EVENTCON.pnin`; param1 indicates an `EVENT_HUMAN` index |
 | 15   |        3 | Checks `EVENTCON.pnin`; param1 indicates an `EVENT_HUMAN` index |
-| 16   |        2 | Checks if a character (by `chano`) is in party (param2). param1's use (0 or 1) is unknown |
+| 16   |        2 | Checks if a character (by `chano`) is in party (param2). param1 controls the boolean logic: <br> param1 == 1 && in_party(param2): execute next command <br /> param1 == 1 && !in_party(param2): return 0 (stop script) <br /> param1 == 0 && in_party(param2): return 0 <br /> param1 == 0 && !in_party(param2): execute next command |
 | 17   |        0 | Default case -- just returns 0 |
 | 18   |        2 | Checks if param2 * 100 <= party gold (potch) |
 | 19   |        1 | Checks `!(event_flag[255] & param1)` -- inverse logic of cmd 20 |
@@ -61,7 +61,7 @@ Note: the "num params" column indicates the number of values that follow the eve
 | 30   |        2 | Checks `map_in_out_flag[param1] & param2` |
 | 31   |        4 | Checks `px` |
 | 32   |        4 | Checks `py` |
-| 33   |        2 | Checks `GAME_WORK base_lv` (Castle level) against param2. <br /> param1 == 0: checks param2 == `base_lv` <br /> param1 == 1: checks `base_lv` < param2 <br /> param1 == 2: checks `base_lv` > param2|
+| 33   |        2 | Checks `GAME_WORK base_lv` (Castle level) against param2. <br /> param1 == 0: return 0 if param2 != `base_lv` <br /> param1 == 1: return 0 if `base_lv` < param2 <br /> param1 == 2: return 0 if `base_lv` > param2|
 | 34   |        2 | Checks `GAME_WORK hon_flag` |
 | 35   |        2 | Checks `GAME_WORK hon_flag` |
 | 36   |        3 | Checks `EVENT_HUMAN[param2]` |
@@ -287,7 +287,7 @@ Normal `mapeventdat[1].eventdat[0]`:
               2,   // param1: base_lv > param2
               2,   // param2: base_lv 2
               16,  //cmd: check for character in party
-              0,   // param1: continue flag
+              0,   // param1: if next character is found in party, return 0
               143, // param2: chano 143 = ??? (not a character)
               ...
             ],
@@ -302,7 +302,7 @@ Recruitment Patch that cuases him to appear earlier:
               2,
               2,
               16, //cmd: check for character in party
-              0,  // param1: continue flag
+              0,  // param1: if next character is found in party, return 0
               68, // param2: chano 68 = Wakaba
               ...
             ],
