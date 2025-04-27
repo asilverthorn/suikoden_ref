@@ -29,8 +29,8 @@ Note: the "num params" column indicates the number of values that follow the eve
 | `eventForm` cmd | num params | Notes |
 |------|----------|----------|
 | 0    |        0 | No-op; often followed by 255, 254 for `eventCom`s that always execute |
-| 1    |        2 | Checks `px` (player x location) |
-| 2    |        2 | Checks `py` (player y location) |
+| 1    |        2 | Return 0 if `px` (player x location) < param1 or `px` > param2 |
+| 2    |        2 | Return 0 if `py` (player y location) < param1 or `py` > param2 |
 | 3    |        2 | Checks `event_flag` `!(event_flag[param1] & param2)` -- inverse logic of cmd 4 |
 | 4    |        2 | Checks `event_flag` `event_flag[param1] & param2` -- inverse logic of cmd 3 |
 | 5    |        1 | Checks `EVENT_HUMAN[param1] `|
