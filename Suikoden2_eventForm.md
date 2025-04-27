@@ -1,5 +1,19 @@
 ## Overview
 
+- [Overview](#overview)
+- [eventForm table](#eventform-table)
+- [examples](#examples)
+	- [Zamza in Toto Inn](#zamza-in-toto-inn)
+	- [Hanna in Burned Toto](#hanna-in-burned-toto)
+	- [Genshu in Coronet](#genshu-in-coronet)
+	- [Tessai appearing in Kuskus](#tessai-appearing-in-kuskus)
+	- [Gantetsu in South Window](#gantetsu-in-south-window)
+		- [eventdat\[17\]](#eventdat17)
+		- [eventdat\[19\]](#eventdat19)
+	- [Long Chan Chan in Rockaxe](#long-chan-chan-in-rockaxe)
+- [Other references](#other-references)
+
+
 This document captures how to parse the `eventdata.mapeventdat[?].eventdat[?].eventForm` values found within the various map MonoBehavior files extractable from the Suikoden I & II remaster bundles.
 
 This document is based on reverse engineering the `EVENTCON$$EventFormTbl` function.
