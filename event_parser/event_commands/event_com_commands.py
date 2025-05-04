@@ -196,6 +196,42 @@ def renz_idou_s_var_len(event_json: List[int], param_idx: int) -> List[int]:
 
 	return params
 
+def time_set_var_len(event_json: List[int], param_idx: int) -> List[int]:
+	''' Translating logic from EVENTCON ECTimeSet that results in it calling COMMAND_LINE_Advance '''
+	params = []
+
+	# first 2 parameters are fixed
+	for i in range(2):
+		params.append(event_json[param_idx])
+		param_idx += 1
+	
+	if params[0] == 0:
+		pass # no extra params read in
+	elif params[0] != 1:
+		if params[0] == 2:
+			# read 1 more
+			params.append(event_json[param_idx])
+			param_idx += 1
+		elif params[0] == 3:
+			# read 1 more
+			params.append(event_json[param_idx])
+			param_idx += 1
+
+	return params
+
+def sentaku_jump_var_len(event_json: List[int], param_idx: int) -> List[int]:
+	''' Read until it hits 255 '''
+	params = []
+	while(param_idx < len(event_json)):
+		# read until 255 (0xff)
+		param = event_json[param_idx]
+		params.append(param)
+		param_idx += 1
+
+		if 0xff == param:
+			break
+	return params
+
 # Static map of eventCom commands to associated info
 EventComCommands = MappingProxyType({
 	0: EventCommand(1, 'ODispOn'),
@@ -227,7 +263,7 @@ EventComCommands = MappingProxyType({
 	29: EventCommand(1, 'SrnBaseScroll'),
 	30: EventCommand(-1, 'OverlayGo', {}, '', overlay_go_var_len),
 	31: EventCommand(3, 'FieldCdRead'),
-	32: EventCommand(-1, 'MemMapChenge'),
+	32: EventCommand(-1, 'MemMapChenge'), # variable based on compos
 	33: EventCommand(-1, 'PartySet', {1: 'CHANO', 2: 'CHANO', 3: 'CHANO', 4: 'CHANO', 5: 'CHANO', 6: 'CHANO', 7: 'CHANO'}, 'Sets required members of party', basic_count_var_len),
 	34: EventCommand(0, 'PartyClear'),
 	35: EventCommand(-1, 'MachiChenge', {}, '', machi_chenge_var_len),
@@ -235,15 +271,15 @@ EventComCommands = MappingProxyType({
 	37: EventCommand(1, 'WkEvFlgOff'),
 	38: EventCommand(0, 'PartyOpenN'),
 	39: EventCommand(0, 'PartyCloseN'),
-	40: EventCommand(-1, 'WindowSentaku'),
-	41: EventCommand(-1, 'SentakuJump'),
+	40: EventCommand(-1, 'WindowSentaku'), # 3 fixed, 2 per param[2], but also has a skip based on < 7
+	41: EventCommand(-1, 'SentakuJump', {}, ''), # manipulates the cmdIdx directly -- script commands.txt says that it "Runs through up to 0xFFFE bytes or until it hits 0xFF looking for a match"
 	42: EventCommand(6, 'WarEventGo'),
 	43: EventCommand(2, 'OSpeedSet'),
 	44: EventCommand(0, 'MapCut'),
 	45: EventCommand(0, 'MapDouki'),
 	46: EventCommand(0, 'RenzokOn'),
-	47: EventCommand(0, 'RenzokOff'),
-	48: EventCommand(-1, 'ObjPosMoveK'),
+	47: EventCommand(0, 'RenzokOff'), #TODO: these always follow a previous call to RenzokOn. Once all variable length fields are completed, an extra validation could be added for that
+	48: EventCommand(-1, 'ObjPosMoveK'), # appears to have up to 7 params, in large part based on param[0] being < 7
 	49: EventCommand(-1, 'RenzIdouS', {}, 'executes sub-commands', renz_idou_s_var_len), # TODO: parse sub-commands
 
 	51: EventCommand(1, 'LabelJump'),
@@ -262,12 +298,12 @@ EventComCommands = MappingProxyType({
 	64: EventCommand(0, 'InitPartyOpenN'),
 	65: EventCommand(-1, 'InitPartyOpenP', {}, '', party_open_p_var_len),
 	66: EventCommand(0, 'FieldCommandGo'),
-	67: EventCommand(-1, 'WindowjikanSentaku'),
+	67: EventCommand(-1, 'WindowjikanSentaku'), # variability appears to be 3 fixed, 2 per param[2], 2 more fixed, but has several Skips
 	68: EventCommand(5, 'ObjColChenge'),
 	69: EventCommand(1, 'FIOControll'),
 	70: EventCommand(2, 'MfreeOverlayGo'),
 	71: EventCommand(2, 'CharEvFlgSet'),
-	72: EventCommand(-1, 'ObjEfctCon'),
+	72: EventCommand(-1, 'ObjEfctCon'), # variable to 3 or 4 params, based in part on compos
 	73: EventCommand(1, 'TimWait'),
 	74: EventCommand(1, 'MachiStControll'),
 	75: EventCommand(-1, 'LPartySet', {1: 'CHANO', 2: 'CHANO', 3: 'CHANO', 4: 'CHANO', 5: 'CHANO', 6: 'CHANO', 7: 'CHANO'}, '', basic_count_var_len),
@@ -285,7 +321,7 @@ EventComCommands = MappingProxyType({
 	87: EventCommand(1, 'SurinukeFlg'),
 	88: EventCommand(0, 'Map16On'),
 	89: EventCommand(-1, 'AnimeChenge', {}, '', anime_chenge_var_len),
-	90: EventCommand(-1, 'OMoveAK', {}, ''),
+	90: EventCommand(-1, 'OMoveAK', {}, ''), # see commented out method above
 	91: EventCommand(2, 'SyuAnimeChenge'),
 	92: EventCommand(-1, 'WindowIroSerifu'), # variable length based in part on param[2] (if < 7, different logic)
 	93: EventCommand(3, 'OPriSet'),
@@ -318,7 +354,7 @@ EventComCommands = MappingProxyType({
 	120: EventCommand(4, 'WindowPartySerifu'),
 	121: EventCommand(1, 'BatParChg'),
 	122: EventCommand(1, 'ShipONOFF'),
-	123: EventCommand(-1, 'TimeSet'),
+	123: EventCommand(-1, 'TimeSet', {}, '', time_set_var_len),
 	124: EventCommand(2, 'TwGFlgSet'),
 	125: EventCommand(2, 'TwGFlgOff'),
 	126: EventCommand(2, 'ItemDel'),
@@ -329,7 +365,7 @@ EventComCommands = MappingProxyType({
 	131: EventCommand(2, 'HonFlgSet'),
 	132: EventCommand(2, 'HonFlgOff'),
 	133: EventCommand(1, 'RndBatCut'),
-	134: EventCommand(-1, 'OverlayPset2', '', basic_count_var_len),
+	134: EventCommand(-1, 'OverlayPset2', {}, '', basic_count_var_len),
 	135: EventCommand(0, 'EndMemory'),
 	136: EventCommand(1, 'PartyDel'),
 	137: EventCommand(0, 'OnCloseResetDialog'),
