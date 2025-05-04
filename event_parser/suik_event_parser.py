@@ -83,7 +83,7 @@ class MapMonoBehavior:
 		self.name = f"{text_map.get(name_idx, name_idx)}({name_idx})" if text_map else f"{name_idx}"
 	
 	def print_info(self):
-		tabs = 0
+		tabs = 1
 		tab_print(tabs, f"Map: {self.name}")
 		tab_print(tabs, f"Form Special Params used: ")
 		self.form_sp_param_tracker.print_info(tabs+1)

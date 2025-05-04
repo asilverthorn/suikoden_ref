@@ -82,9 +82,15 @@ def parse_event_cmds(event_json: List[int], sp_param_tracker: SpecialParamsTrack
 			variable_len = (-1 == num_params)
 			if variable_len:
 				if event_cmd_map[cmd_id].variable_len_func: # there's a function that tells us how long it is
-					params = event_cmd_map[cmd_id].variable_len_func(event_json, i)
-					variable_len = False # marking false so that it gets printed out and the loop continues
-					num_params = len(params)
+					try:
+						params = event_cmd_map[cmd_id].variable_len_func(event_json, i)
+						variable_len = False # marking false so that it gets printed out and the loop continues
+						num_params = len(params)
+					except ValueError as e:
+						# we're about to die -- print out the parsed command up to this point
+						for parsed_cmd in parsed_cmds:
+							parsed_cmd.print_info(0)
+						raise ValueError(f"Failed to execute variable length function for cmd_id {cmd_id} {e}")
 			else: # Fixed number of params
 				if 0 < num_params:
 					params = event_json[i:i+num_params]

@@ -90,6 +90,112 @@ def machi_chenge_var_len(event_json: List[int], param_idx: int) -> List[int]:
 
 	return params
 
+def basic_count_var_len(event_json: List[int], param_idx: int) -> List[int]:
+	'''
+	Variable length param method for various methods that have a fixed parameter that's a count of the remaining ones
+	'''
+	params = []
+
+	# First parameter is fixed
+	params.append(event_json[param_idx])
+	param_idx +=1 
+
+	# Next, it appears to just treat param[0] as the count
+	for i in range(params[0]):
+		params.append(event_json[param_idx])
+		param_idx +=1
+
+	return params
+
+def party_open_p_var_len(event_json: List[int], param_idx: int) -> List[int]:
+	'''
+	Variable length param method for PartyOpenP (52), based on EVENTCON ECPartyOpenP, and InitPartyOpenP (65), based on EVENTCON ECInitPartyOpenP
+	'''
+	params = []
+
+	# First parameter is fixed
+	params.append(event_json[param_idx])
+	param_idx += 1
+
+	# Next, it appears to read 5 parameters in a loop, with param[0] as the count
+	for i in range(params[0]):
+		for j in range(5):
+			params.append(event_json[param_idx])
+			param_idx += 1
+	
+	return params
+
+def overlay_go_var_len(event_json: List[int], param_idx: int) -> List[int]:
+	'''
+	Variable length param method for various Overlay methods that have 2 fixed parameters and the second is the count of remaining
+	'''
+	params = []
+	# first 2 parameters are fixed
+	for i in range(2):
+		params.append(event_json[param_idx])
+		param_idx += 1
+
+	# Next, it reads 1 per param[1]
+	for i in range(params[1]):
+		params.append(event_json[param_idx])
+		param_idx += 1
+	return params
+
+def bg_free_overlay_go_var_len(event_json: List[int], param_idx: int) -> List[int]:
+	'''
+	Read 3, param[2] is length of remaining
+	'''
+	params = []
+	# first 2 parameters are fixed
+	for i in range(3):
+		params.append(event_json[param_idx])
+		param_idx += 1
+
+	# Next, it reads 1 per param[2]
+	for i in range(params[2]):
+		params.append(event_json[param_idx])
+		param_idx += 1
+
+	return params
+
+def renz_idou_s_var_len(event_json: List[int], param_idx: int) -> List[int]:
+	'''
+	Read 1 param (count), read that many times in a loop until it hits 255, 254, then read 1 more -- it should be 0x32
+	'''
+	params = []
+
+	# get count
+	params.append(event_json[param_idx])
+	param_idx += 1
+
+	for i in range(params[0]):
+		while(param_idx < len(event_json)):
+			# read until 255 (0xff)
+			param = event_json[param_idx]
+			params.append(param)
+			param_idx += 1
+
+			if 0xff == param:
+				# read one more, it should be 0xfe (254)
+				param = event_json[param_idx]
+				params.append(param)
+				param_idx += 1
+
+				if 0xfe != param:
+					raise ValueError(f"RenzIdouS does not match the expected pattern of a sub-command ending with 255 254. Value read after 255: {param} @ {param_idx-1}")
+				else:
+					break # out of loop after finding 255 254
+	
+	# read one more, it should be 0x32
+	param = event_json[param_idx]
+	params.append(param)
+	param_idx +=1 
+
+	if 0x32 != param:
+		raise ValueError(f"RenzIdouS does not match the expected pattern of concluding with 50 (0x32). Value read: {param} @ {param_idx-1}")
+
+	return params
+
 # Static map of eventCom commands to associated info
 EventComCommands = MappingProxyType({
 	0: EventCommand(1, 'ODispOn'),
@@ -119,12 +225,12 @@ EventComCommands = MappingProxyType({
 	27: EventCommand(6, 'WindowFreeSize'),
 	28: EventCommand(3, 'SrnScroll'),
 	29: EventCommand(1, 'SrnBaseScroll'),
-	30: EventCommand(-1, 'OverlayGo'),
+	30: EventCommand(-1, 'OverlayGo', {}, '', overlay_go_var_len),
 	31: EventCommand(3, 'FieldCdRead'),
 	32: EventCommand(-1, 'MemMapChenge'),
-	33: EventCommand(-1, 'PartySet'),
+	33: EventCommand(-1, 'PartySet', {1: 'CHANO', 2: 'CHANO', 3: 'CHANO', 4: 'CHANO', 5: 'CHANO', 6: 'CHANO', 7: 'CHANO'}, 'Sets required members of party', basic_count_var_len),
 	34: EventCommand(0, 'PartyClear'),
-	35: EventCommand(-1, 'MachiChenge'),
+	35: EventCommand(-1, 'MachiChenge', {}, '', machi_chenge_var_len),
 	36: EventCommand(1, 'WkEvFlgSet'),
 	37: EventCommand(1, 'WkEvFlgOff'),
 	38: EventCommand(0, 'PartyOpenN'),
@@ -138,10 +244,10 @@ EventComCommands = MappingProxyType({
 	46: EventCommand(0, 'RenzokOn'),
 	47: EventCommand(0, 'RenzokOff'),
 	48: EventCommand(-1, 'ObjPosMoveK'),
-	49: EventCommand(-1, 'RenzIdouS'),
+	49: EventCommand(-1, 'RenzIdouS', {}, 'executes sub-commands', renz_idou_s_var_len), # TODO: parse sub-commands
 
 	51: EventCommand(1, 'LabelJump'),
-	52: EventCommand(-1, 'PartyOpenP'),
+	52: EventCommand(-1, 'PartyOpenP', {}, '', party_open_p_var_len),
 	53: EventCommand(3, 'EvFlgWait'),
 	54: EventCommand(2, 'WkEvFlgWait'),
 	55: EventCommand(4, 'OPosMove'),
@@ -152,9 +258,9 @@ EventComCommands = MappingProxyType({
 	60: EventCommand(2, 'OAniChen'),
 	61: EventCommand(2, 'OSyuAniChen'),
 	62: EventCommand(2, 'PartyDelIN', {1: 'CHANO'}),
-	63: EventCommand(-1, 'InitPartySet'),
+	63: EventCommand(-1, 'InitPartySet', {1: 'CHANO', 2: 'CHANO', 3: 'CHANO', 4: 'CHANO', 5: 'CHANO', 6: 'CHANO', 7: 'CHANO'}, '', basic_count_var_len),
 	64: EventCommand(0, 'InitPartyOpenN'),
-	65: EventCommand(-1, 'InitPartyOpenP'),
+	65: EventCommand(-1, 'InitPartyOpenP', {}, '', party_open_p_var_len),
 	66: EventCommand(0, 'FieldCommandGo'),
 	67: EventCommand(-1, 'WindowjikanSentaku'),
 	68: EventCommand(5, 'ObjColChenge'),
@@ -164,9 +270,9 @@ EventComCommands = MappingProxyType({
 	72: EventCommand(-1, 'ObjEfctCon'),
 	73: EventCommand(1, 'TimWait'),
 	74: EventCommand(1, 'MachiStControll'),
-	75: EventCommand(-1, 'LPartySet'),
+	75: EventCommand(-1, 'LPartySet', {1: 'CHANO', 2: 'CHANO', 3: 'CHANO', 4: 'CHANO', 5: 'CHANO', 6: 'CHANO', 7: 'CHANO'}, '', basic_count_var_len),
 	76: EventCommand(5, 'SrnNanameScroll'),
-	77: EventCommand(-1, 'OMoveTK'),
+	77: EventCommand(-1, 'OMoveTK'), # variable length based in part in param[0] (if < 7, different logic)
 	78: EventCommand(1, 'WindowFaceHyojyo'),
 	79: EventCommand(1, 'WinEvFlgSet'),
 	80: EventCommand(1, 'WinEvFlgOff'),
@@ -174,25 +280,25 @@ EventComCommands = MappingProxyType({
 	82: EventCommand(0, 'WindowStopClear'),
 	83: EventCommand(2, 'EventBattleGo'),
 	84: EventCommand(2, 'CharaStatus', {0: 'CHANO'}),
-	85: EventCommand(-1, 'BGfreeOverlayGo'),
+	85: EventCommand(-1, 'BGfreeOverlayGo', {}, '', bg_free_overlay_go_var_len),
 	86: EventCommand(5, 'SurinukeSet'),
 	87: EventCommand(1, 'SurinukeFlg'),
 	88: EventCommand(0, 'Map16On'),
 	89: EventCommand(-1, 'AnimeChenge', {}, '', anime_chenge_var_len),
 	90: EventCommand(-1, 'OMoveAK', {}, ''),
 	91: EventCommand(2, 'SyuAnimeChenge'),
-	92: EventCommand(-1, 'WindowIroSerifu'),
+	92: EventCommand(-1, 'WindowIroSerifu'), # variable length based in part on param[2] (if < 7, different logic)
 	93: EventCommand(3, 'OPriSet'),
 	94: EventCommand(4, 'ObjFDIO'),
 	95: EventCommand(0, 'ResetGo'),
-	96: EventCommand(-1, 'ShopOverlayGo'),
+	96: EventCommand(-1, 'ShopOverlayGo'), # complicated variable nature, based on current compos
 	97: EventCommand(2, 'TkFlgSet'),
 	98: EventCommand(2, 'TkFlgOff'),
 	99: EventCommand(2, 'TwFlgSet'),
 	100: EventCommand(2, 'TwFlgOff'),
 	101: EventCommand(2, 'SoundCall'),
 	102: EventCommand(1, 'BatBgm'),
-	103: EventCommand(0, 'PartyRefresh'),
+	103: EventCommand(0, 'PartyRefresh', {}, 'Restore party HP/MP'),
 	104: EventCommand(3, 'OHanSet'),
 	105: EventCommand(3, 'SoundRead'),
 	106: EventCommand(2, 'OJinPosSet'),
@@ -201,7 +307,7 @@ EventComCommands = MappingProxyType({
 	109: EventCommand(2, 'FieldCdSeek'),
 	110: EventCommand(0, 'FieldCdClear'),
 	111: EventCommand(0, 'HonSentaku'),
-	112: EventCommand(-1, 'OverlayPset'),
+	112: EventCommand(-1, 'OverlayPset', '', basic_count_var_len),
 	113: EventCommand(0, 'PartyAllDel'),
 	114: EventCommand(3, 'SMapChenge'),
 	115: EventCommand(2, 'CharaLV', {0: 'CHANO'}),
@@ -217,18 +323,18 @@ EventComCommands = MappingProxyType({
 	125: EventCommand(2, 'TwGFlgOff'),
 	126: EventCommand(2, 'ItemDel'),
 	127: EventCommand(3, 'TwFlgWait'),
-	128: EventCommand(-1, 'YMOverlayGo'),
+	128: EventCommand(-1, 'YMOverlayGo', {}, '', overlay_go_var_len),
 	129: EventCommand(3, 'CharaKouStatus', {1: 'CHANO'}),
 	130: EventCommand(2, 'OAniCut'),
 	131: EventCommand(2, 'HonFlgSet'),
 	132: EventCommand(2, 'HonFlgOff'),
 	133: EventCommand(1, 'RndBatCut'),
-	134: EventCommand(-1, 'OverlayPset2'),
+	134: EventCommand(-1, 'OverlayPset2', '', basic_count_var_len),
 	135: EventCommand(0, 'EndMemory'),
 	136: EventCommand(1, 'PartyDel'),
 	137: EventCommand(0, 'OnCloseResetDialog'),
 	138: EventCommand(2, 'FixDoor'),
-	139: EventCommand(-1, 'PartyDelExcludingCharaNo'),
+	139: EventCommand(-1, 'PartyDelExcludingCharaNo'), # appears to be unused
 	140: EventCommand(-1, 'MachiChengeM', {}, '', machi_chenge_var_len),
 	141: EventCommand(1, 'VsyncControl'),
 	
