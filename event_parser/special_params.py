@@ -135,24 +135,36 @@ CHANO = {
 }
 
 EVENT_FLAG = {
-	# these are left undefined; however, by tracking it as a "special param", it'll be counted
 }
 
 # TODO: allow pairing of special_params -- MFNO + MNO are only useful together, as are EVENT_FLAG and its bit
 PNO = {
+}
+
+WINDOW_MFNO = {
 	# these are left undefined; however, by tracking it as a "special param", it'll be counted
 }
 
-FPNO = {
-	# these are left undefined; however, by tracking it as a "special param", it'll be counted
+MAP_MNO = {
+	# used by MapChenge -- may be the same as MAP_NO? Uncertain
 }
 
-MFNO = {
-	# these are left undefined; however, by tracking it as a "special param", it'll be counted
+MAP_NO = {
 }
 
-MNO = {
-	# these are left undefined; however, by tracking it as a "special param", it'll be counted
+WORLD_MAP_REGION = {
+}
+
+AREA_NO = {
+}
+
+TOWN_NO = {
+}
+
+FILE_NO = {
+}
+
+BATTLE_NO = {
 }
 
 def get_special_param_str(special_param: str, param: int) -> str:
