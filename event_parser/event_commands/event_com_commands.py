@@ -254,9 +254,9 @@ EventComCommands = MappingProxyType({
 	20: EventCommand(3, 'WindowFace'),
 	21: EventCommand(0, 'WindowFaceEnd'),
 	22: EventCommand(1, 'WindowFacePos'),
-	23: EventCommand(2, 'WindowHenji'),
-	24: EventCommand(3, 'WindowSerifu'),
-	25: EventCommand(4, 'WindowAnime'),
+	23: EventCommand(2, 'WindowHenji', {0: 'MFNO'}, 'Dialog'),
+	24: EventCommand(3, 'WindowSerifu', {1: 'MFNO'}, 'Dialog'),
+	25: EventCommand(4, 'WindowAnime', {1: 'CHANO', 2: 'MFNO'}, 'Dialog'), # param[1] is referred to as FPNO; it appears to be the character portrait shown
 	26: EventCommand(2, 'WindowEvent'),
 	27: EventCommand(6, 'WindowFreeSize'),
 	28: EventCommand(3, 'SrnScroll'),
@@ -370,7 +370,7 @@ EventComCommands = MappingProxyType({
 	136: EventCommand(1, 'PartyDel'),
 	137: EventCommand(0, 'OnCloseResetDialog'),
 	138: EventCommand(2, 'FixDoor'),
-	139: EventCommand(-1, 'PartyDelExcludingCharaNo'), # appears to be unused
+	139: EventCommand(-1, 'PartyDelExcludingCharaNo', {1: 'CHANO', 2: 'CHANO', 3: 'CHANO', 4: 'CHANO', 5: 'CHANO', 6: 'CHANO', 7: 'CHANO'}, '', basic_count_var_len), # appears to be unused
 	140: EventCommand(-1, 'MachiChengeM', {}, '', machi_chenge_var_len),
 	141: EventCommand(1, 'VsyncControl'),
 	

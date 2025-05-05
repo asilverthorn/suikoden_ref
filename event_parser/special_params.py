@@ -130,7 +130,7 @@ CHANO = {
     121: "Gilbert",
     122: "Boris",
     123: "Pilika",
-    124: "Pilika",
+    124: "Pilika2",
     125: "Gremio",
 }
 
@@ -138,6 +138,22 @@ EVENT_FLAG = {
 	# these are left undefined; however, by tracking it as a "special param", it'll be counted
 }
 
+# TODO: allow pairing of special_params -- MFNO + MNO are only useful together, as are EVENT_FLAG and its bit
+PNO = {
+	# these are left undefined; however, by tracking it as a "special param", it'll be counted
+}
+
+FPNO = {
+	# these are left undefined; however, by tracking it as a "special param", it'll be counted
+}
+
+MFNO = {
+	# these are left undefined; however, by tracking it as a "special param", it'll be counted
+}
+
+MNO = {
+	# these are left undefined; however, by tracking it as a "special param", it'll be counted
+}
 
 def get_special_param_str(special_param: str, param: int) -> str:
     default = f"{param} "
