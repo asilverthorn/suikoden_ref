@@ -1,3 +1,5 @@
+Note: For the latest in reverse engineering of eventForms and eventComs, see the event_parser/suik_event_parser.py in this repo.
+
 useful comparison: https://github.com/pyriell/gs2-bugfixes/blob/master/reference/script%20commands.txt
 
 Source: EVENTCON AssignCmdFunction

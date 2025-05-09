@@ -156,6 +156,18 @@ WORLD_MAP_REGION = {
 }
 
 AREA_NO = {
+	0: "Kyaro_Area_A",
+	1: "MercFort_Area_B",
+	2: "Muse_Area_C",
+	3: "NorthWindow_Area_D",
+	4: "Greenhill_Area_E",
+	5: "Gregminster_Area_F",
+	6: "Tinto_Area_G",
+	7: "TwoRiver_Area_H",
+	8: "Rockaxe_Area_I",
+	9: "LRen_Area_J",
+	10: "HQ_Area_K",
+	12: "WorldMap"
 }
 
 TOWN_NO = {

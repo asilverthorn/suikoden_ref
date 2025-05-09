@@ -1,14 +1,3 @@
-# Example run: py suik_event_parser.py -i ../../exports1.0.3/MonoBehaviour/vf02.json -t ../../exports1.0.3/TextAsset/text_gsd2_en
-
-# From within MonoBehavior:
-# for file in v[a-z][0-9][0-9].json; do
-#    echo "Processing $file"
-#    py ../../suikoden_ref/event_parser/suik_event_parser.py -i $file -t ../TextAsset/text_gsd2_en
-# done
-
-# cd ~/projects/suik/exports1.0.3/MonoBehaviour
-# for file in v[a-z][0-9][0-9].json; do echo "Processing $file" >&2; py ../../suikoden_ref/event_parser/suik_event_parser.py -i $file -t ../TextAsset/text_gsd2_en; done > parsed_events.txt 2>&1
-
 import json
 import sys, io
 
