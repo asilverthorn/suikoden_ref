@@ -10,7 +10,7 @@ To export map JSON files from AssetStudio.GUI:
 2) File -> Load Folder. Select <Steam Library>\steamapps\Common\Suikoden I and II HD Remaster\Suikoden I and II HD Remaster_Data\StreamingAssets\aa\StandaloneWindows64
 3) Wait a few minutes. You should see it Loading .bundle files in its Debug Console
 4) Filter Type -> TextAsset. In the Asset List search bar, search for "text_gsd2_en". Right click and "Export selected asset".
-5) Filter Type -> MonoBehavior. Search for assets that start with 4 and are 4 characters. Example: va01. Right click and export the ones that you're interested in.
+5) Filter Type -> MonoBehavior. Search for assets that start with `v` and are 4 characters. Example: va01. Right click and export the ones that you're interested in.
 
 The second character in the asset name refers to the major world map area. They are:
 
