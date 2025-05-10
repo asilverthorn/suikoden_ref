@@ -42,7 +42,7 @@ CHANO = {
     (32,): "Miklotov",
     (33,): "Camus",
     (34,): "Hauser",
-    (35,): "Freed Y.",
+    (35,): "FreedY",
     (36,): "Kahn",
     (37,): "Amada",
     (38,): "Tai Ho",
@@ -76,7 +76,7 @@ CHANO = {
     (66,): "Hai Yo",
     (67,): "Stallion",
     (68,): "Wakaba",
-    (69,): "LCC",
+    (69,): "LCChan",
     (70,): "Gantetsu",
     (71,): "Hoi",
     (72,): "Siegfried",
@@ -91,7 +91,6 @@ CHANO = {
     (81,): "Jowy2",
     (82,): "McDohl",
     (83,): "Millie2",
-    (84,): "",
     (85,): "Apple",
     (86,): "Templeton",
     (87,): "Kiba",
@@ -135,7 +134,146 @@ CHANO = {
     (125,): "Gremio",
 }
 
+# Found by hooking GAME_WORK.eventFlgON and eventFlgOFF
 EVENT_FLAG = {
+
+    # Multipurpose event bits
+    (0, 1): "Multipurpose",
+    (0, 2): "Multipurpose",
+    (0, 4): "Multipurpose",
+    (0, 8): "Multipurpose",
+    (0, 16): "Multipurpose",
+    (0, 32): "Multipurpose",
+    (0, 64): "Multipurpose",
+    (0, 128): "Multipurpose",
+    ## These appear to get toggled with different speech selections
+    (238, 1): "Multipurpose",
+    (238, 2): "Multipurpose",
+    (238, 4): "Multipurpose",
+    (238, 8): "Multipurpose",
+    (238, 16): "Multipurpose",
+    (238, 32): "Multipurpose",
+    (238, 64): "Multipurpose",
+    (238, 128): "Multipurpose",
+    ## These appear to control some screen effects
+    (237, 1): "Multipurpose",
+    (237, 2): "Multipurpose",
+    (237, 4): "Multipurpose",
+    (237, 8): "Multipurpose",
+    (237, 16): "Multipurpose",
+    (237, 32): "Multipurpose",
+    (237, 64): "Multipurpose",
+    (237, 128): "Multipurpose",
+
+
+    # map changes
+    (55, 4): "EnteredSwallow", # North Swallow Pass
+    
+    # Ryube events
+    (52, 4): "EnteredRyube",
+    ## Rikimaru
+    (165, 2): "RikimaruFed",
+    (165, 4): "RikimaruNoPay", # didn't pay for Rikimaru's meal
+    (165, 8): "RikimaruPay", # paid for Rikimaru's meal
+    (165, 16): "RikimaruRecruited",
+    ## Millie
+    (165, 32): "HelpingMillie", # in Ryube, agree to help Millie
+    (165, 64): "HelpingMillie", # in Ryube, agreed to help Millie
+    (160, 4): "BonaparteSeen", # in Ryube Forest, see Bonaparte
+    (160, 8): "MillieRecruited",
+    ## Shiro, Kinnison
+    (207, 16): "PutBabyBirdInNest",
+    (207, 32): "DeniedBabyBird", # deny putting baby bird in nest
+    (207, 64): "CantSayToKinnison", # choose "I can't say" to Kinnison
+    (207, 128): "ShiroRecruited", # and Kinnison too, but more importantly, Shiro
+
+    (165, 128): "EnteredWorldMap", #after recruiting Ryube characters. Stops getting set after starting Pilika's quest
+
+    # Toto
+    (52, 2): "EnteredToto",
+    (206, 16): "ZamzaRecruited",
+    (166, 4): "MetPilika",
+    (160, 16): "NoToPilika", # say, "That's kind of far" when Pilika asks you to go to Muse
+    (166, 8): "GotPilikasMoney", # Received Pilika's money to buy Wooden Amulet
+
+    # Going to Muse
+    (54, 128): "EnteredWhiteDeer",
+    (54, 2): "EnteredMuseHighlandCheckpoint",
+    (54, 4): "EnteredMuseMatildaCheckpoint",
+    (54, 8): "EnteredMuseGreenhillCheckpoint",
+    (51, 32): "EnteredGreenhill",
+    (51, 16): "EnteredForestVillage",
+    (216, 128): "SpokeToWakaba", #in Forest Village about her Master
+    (216, 8): "SpokeToTony",
+    (88, 16): "LeftForestVillage", # turned off after exiting Forest Village
+    (53, 4): "EnteredTwoRiver",
+    (51, 2): "EnteredCoronet",
+    (51, 1): "EnteredMuse",
+    (151, 32): "MuseBlacksmithDoor", # ON when standing at the blacksmith door, OFF when you step away -- multipurpose?
+    (166, 16): "BoughtWoodenAmulet", 
+
+    # After Toto Burned
+    (166, 32): "TotoBurned",
+    (52, 8): "EnteredMercFort",
+    (166, 128): "BriefedViktorFlik", # briefed Viktor and Flik on Toto
+    (167, 1): "SpokeWithJowy", # spoke with Jowy about trust
+    (167, 2): "GoingToViktorToHelp", #going to speak with Viktor about helping
+    (167, 4): "ShownFireSpears", # when asked to go to Tsai
+    (167, 8): "GoingToTsai", # agreed to ask Tsai for help
+    (167, 16): "GoingToTsai", # after receiving the money from Flik
+
+    (52, 16): "EnteredRadat",
+
+    (167, 64): "NothingToTsai", # say "nothing in particular" to Tsai
+    (167, 128): "RecruitedTsai",
+
+    (239, 128): "RyubeManKilled", # flips ON and OFF when Luca killed man in Ryube
+
+    (168, 2): "RyubeBurned",
+
+    (208, 2): "SpokeWithHanna",
+    (208, 1): "HannaRecruited",
+
+    (168, 4): "PilikaJoinedConvoy", # pilika joins convoy at merc fort
+    (168, 8): "TsaiLeftParty", # after talking to Viktor and Flik and Tsai left to repair the Fire Spears
+    (168, 16): "IUnderstand", # after selecting "I understand" rather than "I want to fight"
+    (169, 1): "AnotherChoice", # after speaking to Viktor again about wanting to fight
+    (168, 32): "IWantToFight", # after choosing "I want to fight"
+    (169, 2): "ScratchedFlik", # after attacking Flik in duel
+    (169, 4): "AfterFlikDuel", # after the duel with Flik
+
+    (169, 8): "MercFortAttackStart",
+    (169, 16): "NeedMoreTime", # after selecting "We still need more time..." before the battle
+    (169, 32): "MercFortBattle", # right before the war battle begins for the merc fort
+    (169, 64): "MercFortBattleWon",
+    (169, 128): "WaitAMinute", # between two battles, choose "Wait a minute"
+
+    (170, 1): "MercFortBattle2",
+    (170, 2): "MercFortBattle2Lost",
+    (170, 4): "MercFortLookingForPilika", 
+    (160, 32): "MercFortLookingForPilika",
+    (176, 1): "FightSoldier1", # first battle within fort
+    (170, 128): "FightSoldier2", # second battle by fireplace
+    (170, 32): "FightSoldier3", # third battle by stairs
+    (176, 2): "FightSoldier4", # fourth battle at top of stairs
+    (176, 4): "FightSoldier4", # same
+
+    (237, 32): "MercFortShaking", #when screen is shaking
+    (237, 64): "MercFortExplosion", # when screen is red
+    (237, 128): "MercFortShaking", # when screen is shaking
+
+    (170, 8): "MercFortDestroyed",
+    (171, 1): "LeftMercFort", # after leaving destroyed fort for world map
+
+    (171, 2): "PilikaShrine", # after Pilika leaves the party and goes to the Shrine
+    (171, 32): "PilikaInShrine", # after Pilika enters the shrine
+    (171, 2): "FlashbackPrison",
+    (171, 4): "FlashbackDone",
+    (171, 8): "AcceptPower",
+    (171, 16): "ShrineDone",
+
+    (23, 8): "WeaponLvl14", # Suspected -- prereq for Genshu recruitment
+    
 }
 
 PNO = {
@@ -186,6 +324,12 @@ T_BOX_FLAG = {
 }
 
 CHA_FLAG_MODE = {
+    (1,): "Recruited",
+    (30,): "StartRecruit", # possibly -- seems to be set when initiating the recruitment dialog
+    (31,): "Recruit", 
+    #(37,): "Recruit", # and add to convoy?
+    #(38,): "Left", # when Tsai left the party
+    #(39,): "Left", # when Tsai left the party
 }
 
 ITEM = {
