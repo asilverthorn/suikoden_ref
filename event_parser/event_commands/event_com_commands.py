@@ -68,22 +68,22 @@ def machi_chenge_var_len(event_json: List[int], param_idx: int) -> List[int]:
 	'''
 	params = []
 
-	# First parameter is fixed
+	# First parameter is fixed -- it's a flag of some sort
 	params.append(event_json[param_idx])
 	param_idx += 1
 
 	if(5 == params[0]):
-		# read 3
+		# read 3 - ano, vno, mno
 		for i in range(3):
-			params.append(event_json[param_idx])
+			params.append(event_json[param_idx]) 
 			param_idx +=1
 	elif(6 != params[0]):
-		# read 3
+		# read 3 - ano, vno, mno
 		for i in range(3):
 			params.append(event_json[param_idx])
 			param_idx +=1
 	
-	# read 2 more
+	# read 2 more - px, py
 	for i in range(2):
 		params.append(event_json[param_idx])
 		param_idx +=1
@@ -243,28 +243,28 @@ EventComCommands = MappingProxyType({
 
 	7: EventCommand(1, 'VramPosSet'), # used?
 	8: EventCommand(0, 'DmSrnMake'), #used?
-	9: EventCommand(2, 'EvFlgSet', {0: 'EVENT_FLAG'}),
-	10: EventCommand(2, 'EvFlgOff', {0: 'EVENT_FLAG'}),
+	9: EventCommand(2, 'EvFlgSet', {0: ('EVENT_FLAG', 1)}),
+	10: EventCommand(2, 'EvFlgOff', {0: ('EVENT_FLAG', 1)}),
 	11: EventCommand(3, 'SrnBWIO', {}, 'Modifies background BlackIn/Out, WhiteIn/Out'),
-	12: EventCommand(3, 'MapChenge', {0: 'MAP_MNO'}, 'sets mno, px, and py'),
+	12: EventCommand(3, 'MapChenge', {0: ('MAP_MNO', 0)}, 'sets mno, px, and py'),
 	13: EventCommand(-1, 'MachiChenge', {}, '', machi_chenge_var_len), 
 
 	18: EventCommand(0, 'PushKey'), # used?
 
-	20: EventCommand(3, 'WindowFace', {0: 'CHANO'}, ''), # used? param[0] is referred to as FPNO; it appears to be the character portrait
+	20: EventCommand(3, 'WindowFace', {0: ('CHANO', 0)}, ''), # used? param[0] is referred to as FPNO; it appears to be the character portrait
 	21: EventCommand(0, 'WindowFaceEnd'), # used?
 	22: EventCommand(1, 'WindowFacePos'), # used?
-	23: EventCommand(2, 'WindowHenji', {0: 'WINDOW_MFNO'}, 'Dialog'),
-	24: EventCommand(3, 'WindowSerifu', {1: 'WINDOW_MFNO'}, 'Dialog'),
-	25: EventCommand(4, 'WindowAnime', {1: 'CHANO', 2: 'WINDOW_MFNO'}, 'Dialog'), # param[1] is referred to as FPNO; it appears to be the character portrait shown
-	26: EventCommand(2, 'WindowEvent', {0: 'WINDOW_MFNO'}, 'Dialog'),
+	23: EventCommand(2, 'WindowHenji', {0: ('WINDOW_MSG', 1)}, 'Dialog'),
+	24: EventCommand(3, 'WindowSerifu', {1: ('WINDOW_MSG', 1)}, 'Dialog'),
+	25: EventCommand(4, 'WindowAnime', {1: ('CHANO', 0), 2: ('WINDOW_MSG', 1)}, 'Dialog'), # param[1] is referred to as FPNO; it appears to be the character portrait shown
+	26: EventCommand(2, 'WindowEvent', {0: ('WINDOW_MSG', 1)}, 'Dialog'),
 	27: EventCommand(6, 'WindowFreeSize'),
 	28: EventCommand(3, 'SrnScroll'),
 	29: EventCommand(1, 'SrnBaseScroll'),
 	30: EventCommand(-1, 'OverlayGo', {}, '', overlay_go_var_len),
-	31: EventCommand(3, 'FieldCdRead', {1: 'AREA_NO', 2: 'FILE_NO'}, ''),
+	31: EventCommand(3, 'FieldCdRead', {1: ('AREA_NO', 0), 2: ('FILE_NO', 0)}, ''),
 	32: EventCommand(-1, 'MemMapChenge'), # variable based on compos
-	33: EventCommand(-1, 'PartySet', {1: 'CHANO', 2: 'CHANO', 3: 'CHANO', 4: 'CHANO', 5: 'CHANO', 6: 'CHANO', 7: 'CHANO'}, 'Sets required members of party', basic_count_var_len),
+	33: EventCommand(-1, 'PartySet', {1: ('CHANO', 0), 2: ('CHANO', 0), 3: ('CHANO', 0), 4: ('CHANO', 0), 5: ('CHANO', 0), 6: ('CHANO', 0), 7: ('CHANO', 0)}, 'Sets required members of party', basic_count_var_len),
 	34: EventCommand(0, 'PartyClear'),
 	35: EventCommand(-1, 'MachiChenge', {}, '', machi_chenge_var_len),
 	36: EventCommand(1, 'WkEvFlgSet'),
@@ -284,7 +284,7 @@ EventComCommands = MappingProxyType({
 
 	51: EventCommand(-1, 'LabelJump'), # appears to be only used once (vc14), in which case param[0] is 0. If it's non-zero, it loops and seems to manipulate the cmdIdx directly
 	52: EventCommand(-1, 'PartyOpenP', {}, '', party_open_p_var_len),
-	53: EventCommand(3, 'EvFlgWait', {1: 'EVENT_FLAG'}, 'Checks EVENT_FLAG with param[1] & param[2]. Loops backwards if it does not match. param[0] controls the desired behavior: 1 = return if flag set, 0 = return if flag not set'), # TODO: add validation check that accepts only 0 or 1 for param[0]
+	53: EventCommand(3, 'EvFlgWait', {1: ('EVENT_FLAG', 1)}, 'Checks EVENT_FLAG(param[1]) & param[2]. Loops backwards if it does not match. param[0] controls the desired behavior: 1 = return if flag set, 0 = return if flag not set'), # TODO: add validation check that accepts only 0 or 1 for param[0]
 	54: EventCommand(2, 'WkEvFlgWait'),
 	55: EventCommand(4, 'OPosMove'),
 	56: EventCommand(7, 'ObjPosMove'),
@@ -293,8 +293,8 @@ EventComCommands = MappingProxyType({
 
 	60: EventCommand(2, 'OAniChen'), #used?
 	61: EventCommand(2, 'OSyuAniChen'),
-	62: EventCommand(2, 'PartyDelIN', {1: 'CHANO'}),
-	63: EventCommand(-1, 'InitPartySet', {1: 'CHANO', 2: 'CHANO', 3: 'CHANO', 4: 'CHANO', 5: 'CHANO', 6: 'CHANO', 7: 'CHANO'}, '', basic_count_var_len),
+	62: EventCommand(2, 'PartyDelIN', {1: ('CHANO', 0)}),
+	63: EventCommand(-1, 'InitPartySet', {1: ('CHANO', 0), 2: ('CHANO', 0), 3: ('CHANO', 0), 4: ('CHANO', 0), 5: ('CHANO', 0), 6: ('CHANO', 0), 7: ('CHANO', 0)}, '', basic_count_var_len),
 	64: EventCommand(0, 'InitPartyOpenN'),
 	65: EventCommand(-1, 'InitPartyOpenP', {}, '', party_open_p_var_len),
 	66: EventCommand(0, 'FieldCommandGo'), #used?
@@ -302,11 +302,11 @@ EventComCommands = MappingProxyType({
 	68: EventCommand(5, 'ObjColChenge', {}, 'Sets R G B (params[2-4]) of the specified EVENT_HUMAN (params[0])'),
 	69: EventCommand(1, 'FIOControll'),
 	70: EventCommand(2, 'MfreeOverlayGo'),
-	71: EventCommand(2, 'CharEvFlgSet', {1: 'CHANO'}, 'Sets G2_SYS_G2_chat_flag'), # used?
+	71: EventCommand(2, 'CharEvFlgSet', {1: ('CHANO', 0)}, 'Sets G2_SYS_G2_chat_flag'), # used?
 	72: EventCommand(-1, 'ObjEfctCon'), # variable to 3 or 4 params, based in part on compos
 	73: EventCommand(1, 'TimWait', {}, 'Loops until compos equals the parameter'),
 	74: EventCommand(1, 'MachiStControll', {}, 'Sets bit 0 in mstatus'),
-	75: EventCommand(-1, 'LPartySet', {1: 'CHANO', 2: 'CHANO', 3: 'CHANO', 4: 'CHANO', 5: 'CHANO', 6: 'CHANO', 7: 'CHANO'}, '', basic_count_var_len),
+	75: EventCommand(-1, 'LPartySet', {1: ('CHANO', 0), 2: ('CHANO', 0), 3: ('CHANO', 0), 4: ('CHANO', 0), 5: ('CHANO', 0), 6: ('CHANO', 0), 7: ('CHANO', 0)}, '', basic_count_var_len),
 	76: EventCommand(5, 'SrnNanameScroll'),
 	77: EventCommand(-1, 'OMoveTK'), # variable length based in part in param[0] (if < 7, different logic)
 	78: EventCommand(1, 'WindowFaceHyojyo', {}, 'Sets kaono -- "face number"?'),
@@ -314,10 +314,10 @@ EventComCommands = MappingProxyType({
 	80: EventCommand(1, 'WinEvFlgOff', {}, 'Clears given bit in event_flag[4][3]'),
 	81: EventCommand(2, 'WinEvFlgWait', {}, 'Loops until given bit (param[1]) in event_flag[4][3] is set or cleared, depending on param[0]'),
 	82: EventCommand(0, 'WindowStopClear'),
-	83: EventCommand(2, 'EventBattleGo', {1: 'BATTLE_NO'}, 'Calls EventBatlleSet(param[1], param[0])'),
-	84: EventCommand(2, 'CharaStatus', {0: 'CHANO'}),
+	83: EventCommand(2, 'EventBattleGo', {1: ('BATTLE_NO', 0)}, 'Calls EventBatlleSet(param[1], param[0])'),
+	84: EventCommand(2, 'CharaStatus', {0: ('CHANO', 0), 1: {'CHARA_STATUS', 0}}),
 	85: EventCommand(-1, 'BGfreeOverlayGo', {}, '', bg_free_overlay_go_var_len),
-	86: EventCommand(5, 'SurinukeSet', {0: 'AREA_NO', 1: 'TOWN_NO', 2: 'MAP_NO'}, 'Sets the escape destination for the map. Param names: s_area_no, s_town_no, s_map_no, s_x, and s_y'), # 
+	86: EventCommand(5, 'SurinukeSet', {0: ('AREA_NO', 0), 1: ('TOWN_MAP', 1)}, 'Sets the escape destination for the map. Param names: s_area_no, s_town_no, s_map_no, s_x, and s_y'), # 
 	87: EventCommand(1, 'SurinukeFlg', {}, 'Updates bit in msave_st'),
 	88: EventCommand(0, 'Map16On'),
 	89: EventCommand(-1, 'AnimeChenge', {}, '', anime_chenge_var_len),
@@ -328,15 +328,15 @@ EventComCommands = MappingProxyType({
 	94: EventCommand(4, 'ObjFDIO'),
 	95: EventCommand(0, 'ResetGo'),
 	96: EventCommand(-1, 'ShopOverlayGo'), # complicated variable nature, based on current compos
-	97: EventCommand(2, 'TkFlgSet'),
-	98: EventCommand(2, 'TkFlgOff'),
-	99: EventCommand(2, 'TwFlgSet'),
-	100: EventCommand(2, 'TwFlgOff'),
-	101: EventCommand(2, 'SoundCall', {}, 'Play Sounds'),
+	97: EventCommand(2, 'TkFlgSet', {0: ('T_BOX_FLAG', 1)}, 'sets t_box_flag'),
+	98: EventCommand(2, 'TkFlgOff', {0: ('T_BOX_FLAG', 1)}, 'clears t_box_flag'),
+	99: EventCommand(2, 'TwFlgSet', {0: ('MAP_IN_OUT_FLAG', 1)}, 'sets map_in_out_flag'),
+	100: EventCommand(2, 'TwFlgOff', {0: ('MAP_IN_OUT_FLAG', 1)}, 'clears map_in_out_flag'),
+	101: EventCommand(2, 'SoundCall', {0: ('SOUND', 1)}, 'Play Sounds'),
 	102: EventCommand(1, 'BatBgm'),
 	103: EventCommand(0, 'PartyRefresh', {}, 'Restore party HP/MP'),
 	104: EventCommand(3, 'OHanSet', {}, 'calls ANIME_anmSetSemiOn/Off'),
-	105: EventCommand(3, 'SoundRead', {}, 'Start BGM'),
+	105: EventCommand(3, 'SoundRead', {}, 'Start BGM - params: typ, adr, flg'),
 	106: EventCommand(2, 'OJinPosSet', {}, 'Swaps info between the two given EVENT_HUMANs'),
 	107: EventCommand(2, 'PartyMoney', {}, 'Calls G2_SYS_G2_party_gold'),
 	108: EventCommand(1, 'Mfree640Go'),
@@ -345,13 +345,13 @@ EventComCommands = MappingProxyType({
 	111: EventCommand(0, 'HonSentaku', {}, 'sets senno to base_lv'),
 	112: EventCommand(-1, 'OverlayPset', '', basic_count_var_len),
 	113: EventCommand(0, 'PartyAllDel', {}, 'Empties the party'),
-	114: EventCommand(3, 'SMapChenge', {0: 'MAP_MNO'}, 'Sets mno, px, py'),
-	115: EventCommand(2, 'CharaLV', {0: 'CHANO'}),
-	116: EventCommand(4, 'CharaSoutaiLV', {0: 'CHANO', 1: 'CHANO'}),
+	114: EventCommand(3, 'SMapChenge', {0: ('MAP_MNO', 0)}, 'Sets mno, px, py'),
+	115: EventCommand(2, 'CharaLV', {0: ('CHANO', 0)}),
+	116: EventCommand(4, 'CharaSoutaiLV', {0: ('CHANO', 0), 1: ('CHANO', 0)}),
 	117: EventCommand(2, 'SpeBgm', {}, 'sets spbgm'),
-	118: EventCommand(5, 'WindowNameSerifu', {1: 'WINDOW_MFNO', 3: 'WINDOW_MFNO'}, 'param[0] is a EVENT_HUMAN. Sets nmfno, nmno, mfno, and mno for remaining params'),
-	119: EventCommand(4, 'WindowNameHenji', {0: 'WINDOW_MFNO', 2: 'WINDOW_MFNO'}, 'Sets nmfno, nmno, mfno, and mno to param values'),
-	120: EventCommand(4, 'WindowPartySerifu', {1: 'WINDOW_MFNO'}),
+	118: EventCommand(5, 'WindowNameSerifu', {1: ('WINDOW_MSG', 1), 3: ('WINDOW_MSG', 1)}, 'param[0] is a EVENT_HUMAN. Sets nmfno, nmno, mfno, and mno for remaining params'),
+	119: EventCommand(4, 'WindowNameHenji', {0: ('WINDOW_MSG', 1), 2: ('WINDOW_MSG', 1)}, 'Sets nmfno, nmno, mfno, and mno to param values'),
+	120: EventCommand(4, 'WindowPartySerifu', {1: ('WINDOW_MSG', 1)}),
 	121: EventCommand(1, 'BatParChg', {}, 'Sets MAPEVDAT batlno'),
 	122: EventCommand(1, 'ShipONOFF', {}, 'sets or clears flag in mstatus'),
 	123: EventCommand(-1, 'TimeSet', {}, '', time_set_var_len),
@@ -360,7 +360,7 @@ EventComCommands = MappingProxyType({
 	126: EventCommand(2, 'ItemDel', {}, 'Calls G2_Sys_G2_deldel on a Party Item'),
 	127: EventCommand(3, 'TwFlgWait', {}, 'Loops until map_in_out_flag set or cleared'),
 	128: EventCommand(-1, 'YMOverlayGo', {}, '', overlay_go_var_len),
-	129: EventCommand(3, 'CharaKouStatus', {1: 'CHANO'}, 'calls G2_SYS_G2_chara_love'),
+	129: EventCommand(3, 'CharaKouStatus', {1: ('CHANO', 0)}, 'calls G2_SYS_G2_chara_love'),
 	130: EventCommand(2, 'OAniCut', {}, 'set or clear osta bit 0x2000 (based on params[0]) for EVENT_HUMAN specified by params[1]'),
 	131: EventCommand(2, 'HonFlgSet', {}, 'sets bit in game_data'),
 	132: EventCommand(2, 'HonFlgOff', {}, 'clears bit in game_data'),
@@ -370,7 +370,7 @@ EventComCommands = MappingProxyType({
 	136: EventCommand(1, 'PartyDel'), # used?
 	137: EventCommand(0, 'OnCloseResetDialog', 'clears _showResetDialog'), # used?
 	138: EventCommand(2, 'FixDoor'),
-	139: EventCommand(-1, 'PartyDelExcludingCharaNo', {1: 'CHANO', 2: 'CHANO', 3: 'CHANO', 4: 'CHANO', 5: 'CHANO', 6: 'CHANO', 7: 'CHANO'}, '', basic_count_var_len), # appears to be unused
+	139: EventCommand(-1, 'PartyDelExcludingCharaNo', {1: ('CHANO', 0), 2: ('CHANO', 0), 3: ('CHANO', 0), 4: ('CHANO', 0), 5: ('CHANO', 0), 6: ('CHANO', 0), 7: ('CHANO', 0)}, '', basic_count_var_len), # appears to be unused
 	140: EventCommand(-1, 'MachiChengeM', {}, '', machi_chenge_var_len),
 	141: EventCommand(1, 'VsyncControl', {}, 'calls SystemObject_Force60FPS'),
 	

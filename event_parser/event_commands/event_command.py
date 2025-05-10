@@ -25,19 +25,37 @@ class ParsedEventCommand:
 		self.event_cmd_map = event_cmd_map
 		if variable_len:
 			self.parsed_params = "(variable params... )"
-		for index, param in enumerate(self.params):
-			self.parsed_params += self.get_parsed_param(index, param)
+		i = 0
+		while i < len(self.params):
+			(parsed_param, i_skip) = self.get_parsed_param(i, self.params[i], params)
+			self.parsed_params += parsed_param
+			i += (1 + i_skip)
 
-	def get_parsed_param(self, param_idx: int, param: int) -> str:
+	def get_parsed_param(self, param_idx: int, param: int, all_params: List[int]) -> (str, int):
+		"""
+		Parse the parameter into a string
+		If it's a special parameter, also read the other bytes specified and get the string for it.
+
+		Returns a tuple containing the string and the number of bytes to skip ahead in the params List
+		"""
 		event_form_cmd = self.event_cmd_map[self.cmd_id]
 		default = f"{param} "
 		if(param_idx in event_form_cmd.special_params):
-			# if has a special parameter, use its value
+			# it has a special parameter, use its value
 			special_param = event_form_cmd.special_params[param_idx]
-			self.sp_param_tracker.add(special_param, param)
-			return get_special_param_str(special_param, param)
+			special_param_str = special_param[0]
+			num_other_bytes = special_param[1]
+			
+			# Form the tuple out of all of the other bytes specified
+			special_param_bytes = [param]
+			for i in range(num_other_bytes):
+				special_param_bytes.append(all_params[param_idx + i + 1])
+			param = tuple(special_param_bytes)
+				
+			self.sp_param_tracker.add(special_param_str, param)
+			return (get_special_param_str(special_param[0], param), num_other_bytes)
 		else:
-			return default
+			return (default, 0)
 
 	def print_info(self, tabs: int):
 		event_form_cmd = self.event_cmd_map[self.cmd_id]
