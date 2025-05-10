@@ -185,7 +185,7 @@ MAP_IN_OUT_FLAG = {
 T_BOX_FLAG = {
 }
 
-CHARA_STATUS = {
+CHA_FLAG_MODE = {
 }
 
 def get_special_param_str(special_param_str: str, param: tuple[int, ...]) -> str:

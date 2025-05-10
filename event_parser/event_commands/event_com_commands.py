@@ -315,7 +315,7 @@ EventComCommands = MappingProxyType({
 	81: EventCommand(2, 'WinEvFlgWait', {}, 'Loops until given bit (param[1]) in event_flag[4][3] is set or cleared, depending on param[0]'),
 	82: EventCommand(0, 'WindowStopClear'),
 	83: EventCommand(2, 'EventBattleGo', {1: ('BATTLE_NO', 0)}, 'Calls EventBatlleSet(param[1], param[0])'),
-	84: EventCommand(2, 'CharaStatus', {0: ('CHANO', 0), 1: {'CHARA_STATUS', 0}}),
+	84: EventCommand(2, 'CharaStatus', {0: ('CHANO', 0), 1: ('CHA_FLAG_MODE', 0)}, 'calls G2_cha_flag(param2, param1)'),
 	85: EventCommand(-1, 'BGfreeOverlayGo', {}, '', bg_free_overlay_go_var_len),
 	86: EventCommand(5, 'SurinukeSet', {0: ('AREA_NO', 0), 1: ('TOWN_MAP', 1)}, 'Sets the escape destination for the map. Param names: s_area_no, s_town_no, s_map_no, s_x, and s_y'), # 
 	87: EventCommand(1, 'SurinukeFlg', {}, 'Updates bit in msave_st'),
