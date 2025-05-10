@@ -28,7 +28,7 @@ EventFormCommands = MappingProxyType({
 	23: EventCommand(2, "G2_cha_flag", {0: ("CHANO", 0), 1: ('CHA_FLAG_MODE', 0)}, "Checks `G2_cha_flag(param2, param1)` <br/> param1 = character number (`chano`) <br /> param2 = mode: `4` = character recruited, not dead or on leave, not in party; `9` = character in party"),
 	24: EventCommand(2, "G2_cha_flag", {0: ("CHANO", 0), 1: ('CHA_FLAG_MODE', 0)}, "Checks `G2_cha_flag(param2, param1)` <br/> param1 = character number (`chano`) <br /> param2 = mode"),
 	25: EventCommand(1, "rand", {}, "Checks random number between 0 and param1"),
-	26: EventCommand(5, "G2_item_num2", {}, "Checks `G2_item_num2`"),
+	26: EventCommand(5, "G2_item_num2", {1: ("ITEM", 1)}, "Checks `G2_item_num2` - param1 = a flag, param2 = item kind, param3 = item number, param4 = quantity"),
 	27: EventCommand(2, "TkFlg_NAND", {}, "Checks `GAME_WORK !(t_box_flag[param1] & param2)`"),
 	28: EventCommand(2, "TkFlg_AND", {}, "Checks `GAME_WORK t_box_flag[param1] & param2`"),
 	29: EventCommand(2, "TwFlg_NAND", {0: ("MAP_IN_OUT_FLAG", 1)}, "Checks `!(map_in_out_flag[param1] & param2)`"),

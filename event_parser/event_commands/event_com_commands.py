@@ -357,7 +357,7 @@ EventComCommands = MappingProxyType({
 	123: EventCommand(-1, 'TimeSet', {}, '', time_set_var_len),
 	124: EventCommand(2, 'TwGFlgSet', {}, 'sets bit in town_flag'),
 	125: EventCommand(2, 'TwGFlgOff', {}, 'clears bit in town_flag'),
-	126: EventCommand(2, 'ItemDel', {}, 'Calls G2_Sys_G2_deldel on a Party Item'),
+	126: EventCommand(2, 'ItemDel', {0: ('ITEM', 1)}, 'Deletes the given Party Item'),
 	127: EventCommand(3, 'TwFlgWait', {}, 'Loops until map_in_out_flag set or cleared'),
 	128: EventCommand(-1, 'YMOverlayGo', {}, '', overlay_go_var_len),
 	129: EventCommand(3, 'CharaKouStatus', {1: ('CHANO', 0)}, 'calls G2_SYS_G2_chara_love'),

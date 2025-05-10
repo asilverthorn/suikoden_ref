@@ -188,6 +188,39 @@ T_BOX_FLAG = {
 CHA_FLAG_MODE = {
 }
 
+ITEM = {
+    # 0 = Regular items
+    (0, 30): "SacrificialJizo",
+    (0, 39): "FlintStone",
+    (0, 47): "IronHammer",
+    (0, 48): "CopperHammer",
+    (0, 49): "SilverHammer",
+    (0, 50): "GoldHammer",
+
+    # 16 = Equipment
+    (16, 38): "WoodenShield",
+    (16, 46): "Boots", 
+    (16, 75): "RoseBrooch",
+
+    # 32 = Runes
+    (32, 5): "WindOrb",
+
+    # 48 = Farming
+    (48, 1): "CabbageSeed",
+    (48, 2): "PotatoSeed",
+    (48, 3): "SpinachSeed",
+    (48, 4): "TomatoSeed",
+    (48, 5): "Chick",
+    (48, 6): "Piglet",
+    (48, 7): "Lamb",
+    (48, 8): "Calf",
+
+    # 64 = Trade
+    (64, 6): "CeladonUrn",
+
+    # 80 = Base Item
+}
+
 def get_special_param_str(special_param_str: str, param: tuple[int, ...]) -> str:
     # Don't tuplize single values (ex: "(0,)" => "0")
     param_str = str(param)
