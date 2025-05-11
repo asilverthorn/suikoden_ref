@@ -146,15 +146,6 @@ EVENT_FLAG = {
     (0, 32): "Multipurpose",
     (0, 64): "Multipurpose",
     (0, 128): "Multipurpose",
-    ## These appear to get toggled with different speech selections
-    (238, 1): "Multipurpose",
-    (238, 2): "Multipurpose",
-    (238, 4): "Multipurpose",
-    (238, 8): "Multipurpose",
-    (238, 16): "Multipurpose",
-    (238, 32): "Multipurpose",
-    (238, 64): "Multipurpose",
-    (238, 128): "Multipurpose",
     ## These appear to control some screen effects
     (237, 1): "Multipurpose",
     (237, 2): "Multipurpose",
@@ -164,11 +155,18 @@ EVENT_FLAG = {
     (237, 32): "Multipurpose",
     (237, 64): "Multipurpose",
     (237, 128): "Multipurpose",
+    ## These appear to get toggled with different speech selections
+    (238, 1): "Multipurpose",
+    (238, 2): "Multipurpose",
+    (238, 4): "Multipurpose",
+    (238, 8): "Multipurpose",
+    (238, 16): "Multipurpose",
+    (238, 32): "Multipurpose",
+    (238, 64): "Multipurpose",
+    (238, 128): "Multipurpose",
 
-
-    # map changes
     (55, 4): "EnteredSwallow", # North Swallow Pass
-    
+
     # Ryube events
     (52, 4): "EnteredRyube",
     ## Rikimaru
@@ -239,13 +237,13 @@ EVENT_FLAG = {
     (168, 16): "IUnderstand", # after selecting "I understand" rather than "I want to fight"
     (169, 1): "AnotherChoice", # after speaking to Viktor again about wanting to fight
     (168, 32): "IWantToFight", # after choosing "I want to fight"
-    (169, 2): "ScratchedFlik", # after attacking Flik in duel
+    #(169, 2): "FlikDuelWin", # duplicated below with other duels
     (169, 4): "AfterFlikDuel", # after the duel with Flik
 
     (169, 8): "MercFortAttackStart",
     (169, 16): "NeedMoreTime", # after selecting "We still need more time..." before the battle
     (169, 32): "MercFortBattle", # right before the war battle begins for the merc fort
-    (169, 64): "MercFortBattleWon",
+    #(169, 64): "WarMercFort", # duplicated below with other war battles
     (169, 128): "WaitAMinute", # between two battles, choose "Wait a minute"
 
     (170, 1): "MercFortBattle2",
@@ -272,8 +270,61 @@ EVENT_FLAG = {
     (171, 8): "AcceptPower",
     (171, 16): "ShrineDone",
 
+
+
+
+
     (23, 8): "WeaponLvl14", # Suspected -- prereq for Genshu recruitment
-    
+
+    # duel bits
+    (25, 2): "Duel1Win", # set in BattleManager PlayerWin if g_ikki_no = 1
+    (25, 32): "Duel2Win", # set in BattleManager PlayerWin if g_ikki_no = 2
+    (169, 2): "FlikDuelWin", # set in BattleManager PlayerWin if g_ikki_no = 3
+    (84, 1): "AmadaDuelWin", # set in BattleManager PlayerWin if g_ikki_no = 4
+    (84, 2): "AmadaDuel", # cleared in BattleManager PlayerWin if g_ikki_no = 4
+    (157, 4): "Duel5Win", # set in BattleManager PlayerWin if g_ikki_no = 5
+
+    (155, 4): "AllGirls", # set/cleared in is_all_girls_Entry after looping through party
+
+    # Boss bits, from functions starting with boss_
+    (187, 32): "BossBoneDragon", # boss_dor
+    (85, 4): "BossGorudo", #boss_gor
+    (85, 2): "BossGorudo", #boss_gor
+    (85, 1): "BossGorudo", #boss_gor
+    (194, 128): "BossHarpy", #boss_hap2
+    (65, 64): "BossWorm", #boss_imo2
+    (65, 32): "BossWorm", #boss_imo2
+    (86, 2): "BossSilverWolf", #boss_las
+    (86, 64): "BossAbomination", #boss_nik
+    (96, 32): "BossLuca1", #boss_luc1
+    (96, 64): "BossLuca1", #boss_luc1
+    (96, 128): "BossLuca2", #boss_luc2
+    (97, 1): "BossLuca2", #boss_luc2
+    (126, 32): "BossLucia", #boss_lus1, 3, 4, 5
+    (86, 2): "BossNeclord&DoubleHead", #boss_nec1, 2, 3, ryo
+    (1, 1): "BossRowd", #boss_rau1 & party_boss_rau1
+    (85, 16): "BossSDSword", #boss_sei
+    (194, 128): "BossSierra", #boss_sie
+    (164, 16): "BossMistShade", #party_boss_ki1
+
+    # War Chapter Updates from WarChapter_Update
+    (169, 64): "WarMercFort", # 1
+    (170, 2): "WarChapter2", # 2
+    (12, 128): "WarChapter3", # 3
+    # skip 4
+    (16, 128): "WarChapter5", # 5
+    (116, 32): "WarChapter6", # 6
+    (117, 11): "WarChapter7", # 7
+
+    #eb_ve02_evbattle
+    (215, 11): "ForestVillageBattle",
+
+    # GSD2SaveData_SetG1Save
+    (150, 2): "S1SaveLoaded",
+
+    # ShugoMain
+    (148, 16): "ShugoMain?"
+
 }
 
 PNO = {
