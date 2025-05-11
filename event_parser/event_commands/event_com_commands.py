@@ -24,29 +24,26 @@ def omovek_var_len(event_json: List[int], param_idx: int) -> List[int]:
 			param_idx+=1
 	return params
 
-## Commented out -- there are examples of OMoveAK being called with the first parameter = 8 and being followed by a non-existent command.
-## This tells me that I'm interpreting the 7 < iVar8 incorrectly -- it's possibly checking the current state of things rather than the parameter
-# def omoveak_var_len(event_json: List[int], param_idx: int) -> List[int]:
-# 	''' Method that returns the parameters for the OMoveAK eventcom command (90)'''
-# 	params = []
+def omoveak_var_len(event_json: List[int], param_idx: int) -> List[int]:
+	''' Method that returns the parameters for the OMoveAK eventcom command (90)'''
+	params = []
 	
-# 	# First parameter is fixed
-# 	params.append(event_json[param_idx])
-# 	param_idx += 1
+	# First parameter is fixed
+	params.append(event_json[param_idx])
+	param_idx += 1
 	
-# 	if 7 >= params[0]:
-# 		# in this case, it goes into a loop looking for 0x1e, similar to OMoveK
-# 		while(param_idx < len(event_json)):
-# 			param = event_json[param_idx]
-# 			params.append(param)
-# 			param_idx+=1
-# 			if 0x1e == param:
-# 				break
-# 			else:
-# 				# read the next parameter too
-# 				params.append(event_json[param_idx])
-# 				param_idx+=1
-# 	return params
+	# it goes into a loop looking for 0x1e, similar to OMoveK
+	while(param_idx < len(event_json)):
+		param = event_json[param_idx]
+		params.append(param)
+		param_idx+=1
+		if 0x1e == param:
+			break
+		else:
+			# read the next parameter too
+			params.append(event_json[param_idx])
+			param_idx+=1
+	return params
 	
 
 def anime_chenge_var_len(event_json: List[int], param_idx: int) -> List[int]:
@@ -249,6 +246,38 @@ def sentaku_jump_var_len(event_json: List[int], param_idx: int) -> List[int]:
 			break
 	return params
 
+def window_jikan_sentaku_var_len(event_json: List[int], param_idx: int) -> List[int]:
+	''' 3 fixed, then 2 per param[2], then 2 fixed '''
+	params = []
+
+	# first 3 parameters are fixed
+	for i in range(3):
+		params.append(event_json[param_idx])
+		param_idx += 1
+
+	for i in range(params[2]):
+		for j in range(2):
+			params.append(event_json[param_idx])
+			param_idx += 1
+
+	for i in range(2):
+		params.append(event_json[param_idx])
+		param_idx += 1
+	return params
+
+def shop_overlay_go_var_len(event_json: List[int], param_idx: int) -> List[int]:
+	'''
+	7 fixed then then 1 per param[6]
+	'''
+	params = []
+	for i in range(7):
+		params.append(event_json[param_idx])
+		param_idx += 1
+	for i in range(params[6]):
+		params.append(event_json[param_idx])
+		param_idx += 1
+	return params
+
 # Static map of eventCom commands to associated info
 EventComCommands = MappingProxyType({
 	0: EventCommand(1, 'ODispOn'),
@@ -315,7 +344,7 @@ EventComCommands = MappingProxyType({
 	64: EventCommand(0, 'InitPartyOpenN'),
 	65: EventCommand(-1, 'InitPartyOpenP', {}, '', party_open_p_var_len),
 	66: EventCommand(0, 'FieldCommandGo'), #used?
-	67: EventCommand(-1, 'WindowjikanSentaku'), # variability appears to be 3 fixed, 2 per param[2], 2 more fixed, but has several Skips
+	67: EventCommand(-1, 'WindowjikanSentaku', {3: ('WINDOW_MSG', 1), 5: ('WINDOW_MSG', 1)}, 'Dialog with Choices', window_jikan_sentaku_var_len),
 	68: EventCommand(5, 'ObjColChenge', {}, 'Sets R G B (params[2-4]) of the specified EVENT_HUMAN (params[0])'),
 	69: EventCommand(1, 'FIOControll'),
 	70: EventCommand(2, 'MfreeOverlayGo'),
@@ -325,7 +354,7 @@ EventComCommands = MappingProxyType({
 	74: EventCommand(1, 'MachiStControll', {}, 'Sets bit 0 in mstatus'),
 	75: EventCommand(-1, 'LPartySet', {1: ('CHANO', 0), 2: ('CHANO', 0), 3: ('CHANO', 0), 4: ('CHANO', 0), 5: ('CHANO', 0), 6: ('CHANO', 0), 7: ('CHANO', 0)}, '', basic_count_var_len),
 	76: EventCommand(5, 'SrnNanameScroll'),
-	77: EventCommand(-1, 'OMoveTK'), # variable length based in part in param[0] (if < 7, different logic)
+	77: EventCommand(-1, 'OMoveTK', {}, 'Sets direction and speed on a EVENT_HUMAN'), # param[0] is the EVENT_HUMAN, if param[1] (cmd) == 4, then read 2 params (spd + new cmd); if that second param (cmd) is 0x1E (30), done. Else, read one more param (distance) and act upon the cmd - 0-3 = move. 5 = stop, 6 = jump, 7 = continue prev direction
 	78: EventCommand(1, 'WindowFaceHyojyo', {}, 'Sets kaono -- "face number"?'),
 	79: EventCommand(1, 'WinEvFlgSet', {}, 'Sets given bit in event_flag[4][3]'),
 	80: EventCommand(1, 'WinEvFlgOff', {}, 'Clears given bit in event_flag[4][3]'),
@@ -338,13 +367,13 @@ EventComCommands = MappingProxyType({
 	87: EventCommand(1, 'SurinukeFlg', {}, 'Updates bit in msave_st'),
 	88: EventCommand(0, 'Map16On'),
 	89: EventCommand(-1, 'AnimeChenge', {}, '', anime_chenge_var_len),
-	90: EventCommand(-1, 'OMoveAK', {}, ''), # see commented out method above
+	90: EventCommand(-1, 'OMoveAK', {}, '', omoveak_var_len),
 	91: EventCommand(2, 'SyuAnimeChenge'),
-	92: EventCommand(-1, 'WindowIroSerifu'), # variable length based in part on param[2] (if < 7, different logic)
+	92: EventCommand(5, 'WindowIroSerifu', {3: ("WINDOW_MSG", 1)}, 'Dialog'),
 	93: EventCommand(3, 'OPriSet'),
 	94: EventCommand(4, 'ObjFDIO'),
 	95: EventCommand(0, 'ResetGo'),
-	96: EventCommand(-1, 'ShopOverlayGo'), # complicated variable nature, based on current compos
+	96: EventCommand(-1, 'ShopOverlayGo', {2: ("WINDOW_MSG", 1), 4: ("WINDOW_MSG", 1)}, '', shop_overlay_go_var_len), 
 	97: EventCommand(2, 'TkFlgSet', {0: ('T_BOX_FLAG', 1)}, 'sets t_box_flag'),
 	98: EventCommand(2, 'TkFlgOff', {0: ('T_BOX_FLAG', 1)}, 'clears t_box_flag'),
 	99: EventCommand(2, 'TwFlgSet', {0: ('MAP_IN_OUT_FLAG', 1)}, 'sets map_in_out_flag'),
