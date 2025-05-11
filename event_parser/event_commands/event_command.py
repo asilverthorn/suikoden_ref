@@ -24,12 +24,13 @@ class ParsedEventCommand:
 		self.parsed_params = ""
 		self.event_cmd_map = event_cmd_map
 		if variable_len:
-			self.parsed_params = "(variable params... )"
-		i = 0
-		while i < len(self.params):
-			(parsed_param, i_skip) = self.get_parsed_param(i, self.params[i], params)
-			self.parsed_params += parsed_param
-			i += (1 + i_skip)
+			self.parsed_params = f"(variable params... {params})"
+		else:
+			i = 0
+			while i < len(self.params):
+				(parsed_param, i_skip) = self.get_parsed_param(i, self.params[i], params)
+				self.parsed_params += parsed_param
+				i += (1 + i_skip)
 
 	def get_parsed_param(self, param_idx: int, param: int, all_params: List[int]) -> (str, int):
 		"""
@@ -109,6 +110,8 @@ def parse_event_cmds(event_json: List[int], sp_param_tracker: SpecialParamsTrack
 						for parsed_cmd in parsed_cmds:
 							parsed_cmd.print_info(0)
 						raise ValueError(f"Failed to execute variable length function for cmd_id {cmd_id} {e}")
+				else: # no function. We're going to just read in the rest of the commands to dump it to the output file
+					params = event_json[i:]
 			else: # Fixed number of params
 				if 0 < num_params:
 					params = event_json[i:i+num_params]

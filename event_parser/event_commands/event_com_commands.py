@@ -219,6 +219,23 @@ def time_set_var_len(event_json: List[int], param_idx: int) -> List[int]:
 
 	return params
 
+def window_sentaku_var_len(event_json: List[int], param_idx: int) -> List[int]:
+	'''
+	3 fixed, and then 2 per param[2]
+	'''
+	params = []
+
+	# first 3 parameters are fixed
+	for i in range(3):
+		params.append(event_json[param_idx])
+		param_idx += 1
+
+	for i in range(params[2]):
+		for j in range(2):
+			params.append(event_json[param_idx])
+			param_idx += 1
+	return params
+
 def sentaku_jump_var_len(event_json: List[int], param_idx: int) -> List[int]:
 	''' Read until it hits 255 '''
 	params = []
@@ -255,7 +272,7 @@ EventComCommands = MappingProxyType({
 	21: EventCommand(0, 'WindowFaceEnd'), # used?
 	22: EventCommand(1, 'WindowFacePos'), # used?
 	23: EventCommand(2, 'WindowHenji', {0: ('WINDOW_MSG', 1)}, 'Dialog'),
-	24: EventCommand(3, 'WindowSerifu', {1: ('WINDOW_MSG', 1)}, 'Dialog'),
+	24: EventCommand(3, 'WindowSerifu', {1: ('WINDOW_MSG', 1)}, 'Dialog'), # param[0] is referred to as FPNO; it's likely the character name shown
 	25: EventCommand(4, 'WindowAnime', {1: ('CHANO', 0), 2: ('WINDOW_MSG', 1)}, 'Dialog'), # param[1] is referred to as FPNO; it appears to be the character portrait shown
 	26: EventCommand(2, 'WindowEvent', {0: ('WINDOW_MSG', 1)}, 'Dialog'),
 	27: EventCommand(6, 'WindowFreeSize'),
@@ -263,7 +280,7 @@ EventComCommands = MappingProxyType({
 	29: EventCommand(1, 'SrnBaseScroll'),
 	30: EventCommand(-1, 'OverlayGo', {}, '', overlay_go_var_len),
 	31: EventCommand(3, 'FieldCdRead', {1: ('AREA_NO', 0), 2: ('FILE_NO', 0)}, ''),
-	32: EventCommand(-1, 'MemMapChenge'), # variable based on compos
+	32: EventCommand(4, 'MemMapChenge'), # may be variable based on compos
 	33: EventCommand(-1, 'PartySet', {1: ('CHANO', 0), 2: ('CHANO', 0), 3: ('CHANO', 0), 4: ('CHANO', 0), 5: ('CHANO', 0), 6: ('CHANO', 0), 7: ('CHANO', 0)}, 'Sets required members of party', basic_count_var_len),
 	34: EventCommand(0, 'PartyClear'),
 	35: EventCommand(-1, 'MachiChenge', {}, '', machi_chenge_var_len),
@@ -271,7 +288,7 @@ EventComCommands = MappingProxyType({
 	37: EventCommand(1, 'WkEvFlgOff'),
 	38: EventCommand(0, 'PartyOpenN'),
 	39: EventCommand(0, 'PartyCloseN'),
-	40: EventCommand(-1, 'WindowSentaku'), # 3 fixed, 2 per param[2], but also has a skip based on < 7
+	40: EventCommand(-1, 'WindowSentaku', {3: ('WINDOW_MSG', 1), 5: ('WINDOW_MSG', 1), 7: ('WINDOW_MSG', 1), 9: ('WINDOW_MSG', 1)}, 'Dialog with Choices', window_sentaku_var_len), # param[2] is the number of choices. param[3] and [4] are then the first WINDOW_MSG for the choice
 	41: EventCommand(-1, 'SentakuJump', {}, ''), # manipulates the cmdIdx directly -- script commands.txt says that it "Runs through up to 0xFFFE bytes or until it hits 0xFF looking for a match"
 	42: EventCommand(6, 'WarEventGo'),
 	43: EventCommand(2, 'OSpeedSet', {}, 'sets the spd for the associated EVENT_HUMAN'),
@@ -279,7 +296,7 @@ EventComCommands = MappingProxyType({
 	45: EventCommand(0, 'MapDouki', {}, 'clears bit 0x2000 in syust'),
 	46: EventCommand(0, 'RenzokOn', {}, 'sets bit 0x40 in comst'),
 	47: EventCommand(0, 'RenzokOff', {}, 'clears bit 0x40 in comst'), #TODO: these always follow a previous call to RenzokOn. Once all variable length fields are completed, an extra validation could be added for that
-	48: EventCommand(-1, 'ObjPosMoveK'), # appears to have up to 7 params, in large part based on param[0] being < 7
+	48: EventCommand(7, 'ObjPosMoveK'), # appears to have up to 7 params, in large part based on param[0] being < 7
 	49: EventCommand(-1, 'RenzIdouS', {}, 'executes sub-commands', renz_idou_s_var_len), # TODO: parse sub-commands
 
 	51: EventCommand(-1, 'LabelJump'), # appears to be only used once (vc14), in which case param[0] is 0. If it's non-zero, it loops and seems to manipulate the cmdIdx directly
