@@ -114,7 +114,7 @@ def parse_event_cmds(event_json: List[int], sp_param_tracker: SpecialParamsTrack
 						params = event_cmd_map[cmd_id].variable_len_func(event_json, i)
 						variable_len = False # marking false so that it gets printed out and the loop continues
 						num_params = len(params)
-					except ValueError as e:
+					except (ValueError, IndexError) as e:
 						# we're about to die -- print out the parsed command up to this point
 						for parsed_cmd in parsed_cmds:
 							parsed_cmd.print_info(0)

@@ -254,8 +254,38 @@ def window_sentaku_var_len(event_json: List[int], param_idx: int) -> List[int]:
 	return params
 
 def sentaku_jump_var_len(event_json: List[int], param_idx: int) -> List[int]:
-	''' Read until it hits 255 '''
+	''' Read subcommands '''
 	params = []
+	labels = {} # these come after the first parameter and are used in indicate the start of a command
+
+	# first parameter is fixed -- it's a count of the labels
+	params = []
+	params.append(event_json[param_idx])
+	param_idx += 1
+
+	# then, read that number of parameters specified by the first one -- these are our labels
+	for i in range(params[0]):
+		param = event_json[param_idx]
+		params.append(param)
+		labels[param] = False
+		param_idx += 1
+
+	# next, for each labels, read until you find (255, label)
+	labels_found = 0
+	while labels_found < len(labels):
+		param = event_json[param_idx]
+		params.append(param)
+		param_idx += 1
+		if(255 == param):
+			param = event_json[param_idx]
+			params.append(param)
+			param_idx += 1
+			if param in labels: # the match_vals aren't always in order, so we'll look for a match to any of them
+				# we found it, move on to the next label
+				labels_found += 1
+				labels[param] = True
+
+	# finally, read until we find 255 254
 	while(param_idx < len(event_json)):
 		# read until 255 (0xff)
 		param = event_json[param_idx]
@@ -263,7 +293,13 @@ def sentaku_jump_var_len(event_json: List[int], param_idx: int) -> List[int]:
 		param_idx += 1
 
 		if 0xff == param:
-			break
+			# read one more, it should be 0xfe (254)
+			param = event_json[param_idx]
+			params.append(param)
+			param_idx += 1
+
+			if 0xfe == param:
+				break # out of loop after finding 255 254
 	return params
 
 def window_jikan_sentaku_var_len(event_json: List[int], param_idx: int) -> List[int]:
@@ -359,7 +395,7 @@ EventComCommands = MappingProxyType({
 	38: EventCommand(0, 'PartyOpenN'),
 	39: EventCommand(0, 'PartyCloseN'),
 	40: EventCommand(-1, 'WindowSentaku', {3: ('WINDOW_MSG', 1), 5: ('WINDOW_MSG', 1), 7: ('WINDOW_MSG', 1), 9: ('WINDOW_MSG', 1)}, 'Dialog with Choices', window_sentaku_var_len), # param[2] is the number of choices. param[3] and [4] are then the first WINDOW_MSG for the choice
-	41: EventCommand(-1, 'SentakuJump', {}, ''), # TODO: figure out variable length. manipulates the cmdIdx directly -- script commands.txt says that it "Runs through up to 0xFFFE bytes or until it hits 0xFF looking for a match"
+	41: EventCommand(-1, 'SentakuJump', {}, ''),#, sentaku_jump_var_len), # TODO: figure out variable length. manipulates the cmdIdx directly -- script commands.txt says that it "Runs through up to 0xFFFE bytes or until it hits 0xFF looking for a match". param[0] is a length of the number of params to immediately follow (up to a 255); it likely continues past that. When it continues, it's looking for 255 X, where X matches the earlier parameter -- it's like the X indicates the start of that subcommand
 	42: EventCommand(6, 'WarEventGo'),
 	43: EventCommand(2, 'OSpeedSet', {}, 'sets the spd for the associated EVENT_HUMAN'),
 	44: EventCommand(0, 'MapCut', {}, 'sets bit 0x2000 in syust'),

@@ -426,7 +426,7 @@ class SpecialParamsTracker:
     """
     Class used to track special param usage
     """
-    def __init__(self, sce_msg, m_name: str):
+    def __init__(self, sce_msg = None, m_name: str | None = None):
         # A dictionary where each key is a special_param and each value is a set of the parameter values seen
         self.special_params_used = {}
         self.sce_msg = sce_msg
@@ -472,7 +472,7 @@ class SpecialParamsTracker:
             param_str = str(param[0])
 
         default = f"{param_str} "
-        if(special_param_str == "WINDOW_MSG"):
+        if(special_param_str == "WINDOW_MSG" and self.sce_msg and self.m_name):
             return f"{self.get_window_msg_id(param)}{param_str} "
         elif(special_param_str in globals()):
             global_obj = globals()[special_param_str]
