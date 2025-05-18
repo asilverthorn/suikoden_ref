@@ -253,55 +253,6 @@ def window_sentaku_var_len(event_json: List[int], param_idx: int) -> List[int]:
 			param_idx += 1
 	return params
 
-def sentaku_jump_var_len(event_json: List[int], param_idx: int) -> List[int]:
-	''' Read subcommands '''
-	params = []
-	labels = {} # these come after the first parameter and are used in indicate the start of a command
-
-	# first parameter is fixed -- it's a count of the labels
-	params = []
-	params.append(event_json[param_idx])
-	param_idx += 1
-
-	# then, read that number of parameters specified by the first one -- these are our labels
-	for i in range(params[0]):
-		param = event_json[param_idx]
-		params.append(param)
-		labels[param] = False
-		param_idx += 1
-
-	# next, for each labels, read until you find (255, label)
-	labels_found = 0
-	while labels_found < len(labels):
-		param = event_json[param_idx]
-		params.append(param)
-		param_idx += 1
-		if(255 == param):
-			param = event_json[param_idx]
-			params.append(param)
-			param_idx += 1
-			if param in labels: # the match_vals aren't always in order, so we'll look for a match to any of them
-				# we found it, move on to the next label
-				labels_found += 1
-				labels[param] = True
-
-	# finally, read until we find 255 254
-	while(param_idx < len(event_json)):
-		# read until 255 (0xff)
-		param = event_json[param_idx]
-		params.append(param)
-		param_idx += 1
-
-		if 0xff == param:
-			# read one more, it should be 0xfe (254)
-			param = event_json[param_idx]
-			params.append(param)
-			param_idx += 1
-
-			if 0xfe == param:
-				break # out of loop after finding 255 254
-	return params
-
 def window_jikan_sentaku_var_len(event_json: List[int], param_idx: int) -> List[int]:
 	''' 3 fixed, then 2 per param[2], then 2 fixed '''
 	params = []
@@ -395,7 +346,7 @@ EventComCommands = MappingProxyType({
 	38: EventCommand(0, 'PartyOpenN'),
 	39: EventCommand(0, 'PartyCloseN'),
 	40: EventCommand(-1, 'WindowSentaku', {3: ('WINDOW_MSG', 1), 5: ('WINDOW_MSG', 1), 7: ('WINDOW_MSG', 1), 9: ('WINDOW_MSG', 1)}, 'Dialog with Choices', window_sentaku_var_len), # param[2] is the number of choices. param[3] and [4] are then the first WINDOW_MSG for the choice
-	41: EventCommand(-1, 'SentakuJump', {}, ''),#, sentaku_jump_var_len), # TODO: figure out variable length. manipulates the cmdIdx directly -- script commands.txt says that it "Runs through up to 0xFFFE bytes or until it hits 0xFF looking for a match". param[0] is a length of the number of params to immediately follow (up to a 255); it likely continues past that. When it continues, it's looking for 255 X, where X matches the earlier parameter -- it's like the X indicates the start of that subcommand
+	41: EventCommand(-1, 'SentakuJump', {}, 'Branch to the LABEL specified by parameter number that matches previous WindowSentaku choice', basic_count_var_len), 
 	42: EventCommand(6, 'WarEventGo'),
 	43: EventCommand(2, 'OSpeedSet', {}, 'sets the spd for the associated EVENT_HUMAN'),
 	44: EventCommand(0, 'MapCut', {}, 'sets bit 0x2000 in syust'),
@@ -405,7 +356,7 @@ EventComCommands = MappingProxyType({
 	48: EventCommand(7, 'ObjPosMoveK'), # appears to have up to 7 params, in large part based on param[0] being < 7
 	49: EventCommand(-1, 'RenzIdouS', {}, 'executes sub-commands', renz_idou_s_var_len, True), 
 	50: EventCommand(0, 'endRenzIdouS'),
-	51: EventCommand(-1, 'LabelJump'), # TODO: appears to be only used once (vc14), in which case param[0] is 0. If it's non-zero, it loops and seems to manipulate the cmdIdx directly
+	51: EventCommand(1, 'LabelJump', {}, 'Jump to the specified LABEL'),
 	52: EventCommand(-1, 'PartyOpenP', {}, '', party_open_p_var_len),
 	53: EventCommand(3, 'EvFlgWait', {1: ('EVENT_FLAG', 1)}, 'Checks EVENT_FLAG(param[1]) & param[2]. Loops backwards if it does not match. param[0] controls the desired behavior: 1 = return if flag set, 0 = return if flag not set'), # TODO: add validation check that accepts only 0 or 1 for param[0]
 	54: EventCommand(2, 'WkEvFlgWait'),
@@ -498,6 +449,7 @@ EventComCommands = MappingProxyType({
 	141: EventCommand(1, 'VsyncControl', {}, 'calls SystemObject_Force60FPS'),
 	
 	204: EventCommand(0, 'NOP'),
+	240: EventCommand(0, 'UNK'), # unknown command only seen in vd04
 	254: EventCommand(0, 'NOP'),
-	255: EventCommand(1, 'END')
+	255: EventCommand(1, 'LABEL')
 })
