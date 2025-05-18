@@ -44,7 +44,27 @@ def omoveak_var_len(event_json: List[int], param_idx: int) -> List[int]:
 			params.append(event_json[param_idx])
 			param_idx+=1
 	return params
+
+def omovetk_var_len(event_json: List[int], param_idx: int) -> List[int]:
+	''''''
+	params = []
 	
+	# First params is always fixed
+	params.append(event_json[param_idx])
+	param_idx +=1
+	
+	# Then it goes in increments of 2 (direction + steps). If the direction that's read is 0x1e, then exit the loop
+	while(param_idx < len(event_json)):
+		param = event_json[param_idx]
+		params.append(param)
+		param_idx+=1
+		if 0x1e == param:
+			break
+		else:
+			# not the exit direction, read the next parameter too
+			params.append(event_json[param_idx])
+			param_idx+=1
+	return params
 
 def anime_chenge_var_len(event_json: List[int], param_idx: int) -> List[int]:
 	''' Method that returns the parameters for the AnimeChenge eventcom command (89)'''
@@ -347,7 +367,7 @@ EventComCommands = MappingProxyType({
 	46: EventCommand(0, 'RenzokOn', {}, 'sets bit 0x40 in comst'),
 	47: EventCommand(0, 'RenzokOff', {}, 'clears bit 0x40 in comst'), #TODO: these always follow a previous call to RenzokOn. Once all variable length fields are completed, an extra validation could be added for that
 	48: EventCommand(7, 'ObjPosMoveK'), # appears to have up to 7 params, in large part based on param[0] being < 7
-	49: EventCommand(-1, 'RenzIdouS', {}, 'executes sub-commands', renz_idou_s_var_len, True), # TODO: parse sub-commands
+	49: EventCommand(-1, 'RenzIdouS', {}, 'executes sub-commands', renz_idou_s_var_len, True), 
 	50: EventCommand(0, 'endRenzIdouS'),
 	51: EventCommand(-1, 'LabelJump'), # TODO: appears to be only used once (vc14), in which case param[0] is 0. If it's non-zero, it loops and seems to manipulate the cmdIdx directly
 	52: EventCommand(-1, 'PartyOpenP', {}, '', party_open_p_var_len),
@@ -375,7 +395,7 @@ EventComCommands = MappingProxyType({
 	74: EventCommand(1, 'MachiStControll', {}, 'Sets bit 0 in mstatus'),
 	75: EventCommand(-1, 'LPartySet', {1: ('CHANO', 0), 2: ('CHANO', 0), 3: ('CHANO', 0), 4: ('CHANO', 0), 5: ('CHANO', 0), 6: ('CHANO', 0), 7: ('CHANO', 0)}, '', basic_count_var_len),
 	76: EventCommand(5, 'SrnNanameScroll'),
-	77: EventCommand(-1, 'OMoveTK', {}, 'Sets direction and speed on a EVENT_HUMAN'), # param[0] is the EVENT_HUMAN, if param[1] (cmd) == 4, then read 2 params (spd + new cmd); if that second param (cmd) is 0x1E (30), done. Else, read one more param (distance) and act upon the cmd - 0-3 = move. 5 = stop, 6 = jump, 7 = continue prev direction
+	77: EventCommand(-1, 'OMoveTK', {}, 'Sets direction and speed on a EVENT_HUMAN', omovetk_var_len), #param[0] is the EVENT_HUMAN
 	78: EventCommand(1, 'WindowFaceHyojyo', {}, 'Sets kaono -- "face number"?'),
 	79: EventCommand(1, 'WinEvFlgSet', {}, 'Sets given bit in event_flag[4][3]'),
 	80: EventCommand(1, 'WinEvFlgOff', {}, 'Clears given bit in event_flag[4][3]'),
@@ -410,7 +430,7 @@ EventComCommands = MappingProxyType({
 	109: EventCommand(2, 'FieldCdSeek'),
 	110: EventCommand(0, 'NOP'),
 	111: EventCommand(0, 'HonSentaku', {}, 'sets senno to base_lv'),
-	112: EventCommand(-1, 'OverlayPset', '', basic_count_var_len),
+	112: EventCommand(-1, 'OverlayPset', {}, '', basic_count_var_len),
 	113: EventCommand(0, 'PartyAllDel', {}, 'Empties the party'),
 	114: EventCommand(3, 'SMapChenge', {0: ('MAP_MNO', 0)}, 'Sets mno, px, py'),
 	115: EventCommand(2, 'CharaLV', {0: ('CHANO', 0)}),
