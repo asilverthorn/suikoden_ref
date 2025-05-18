@@ -70,7 +70,7 @@ class ParsedEventCommand:
 			tab_print(tabs, f"{short_name}({self.cmd_id}) {self.params[0]}")
 			for embedded_cmd in self.embedded_cmds:
 				embedded_cmd.print_info(tabs+1)
-		elif 'NOP' != short_name and 'END' != short_name: # ignore END and NOP
+		else: #'NOP' != short_name and 'END' != short_name: # ignore END and NOP
 			# just print the command with its parsed parameters
 			tab_print(tabs, f"{short_name}({self.cmd_id}) {self.parsed_params}")
 

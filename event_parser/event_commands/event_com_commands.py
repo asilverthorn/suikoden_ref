@@ -278,6 +278,27 @@ def shop_overlay_go_var_len(event_json: List[int], param_idx: int) -> List[int]:
 		param_idx += 1
 	return params
 
+def obj_efct_con_var_len(event_json: List[int], param_idx: int) -> List[int]:
+	'''
+	if param[0] == 0, length = 2, else if param[0] == 1, length = 3
+	'''
+	params = []
+	params.append(event_json[param_idx])
+	param_idx += 1
+	
+	if params[0] == 0:
+		# read 1 more
+		params.append(event_json[param_idx])
+		param_idx += 1
+	elif params[0] == 1:
+		# read 2 more
+		for i in range(2):
+			params.append(event_json[param_idx])
+			param_idx += 1
+	else:
+		raise ValueError(f"ObjEfctCon's first param is neither 0 or 1. Value read: {params[0]} @ {param_idx-1}")
+	return params
+
 # Static map of eventCom commands to associated info
 EventComCommands = MappingProxyType({
 	0: EventCommand(1, 'ODispOn'),
@@ -327,7 +348,7 @@ EventComCommands = MappingProxyType({
 	47: EventCommand(0, 'RenzokOff', {}, 'clears bit 0x40 in comst'), #TODO: these always follow a previous call to RenzokOn. Once all variable length fields are completed, an extra validation could be added for that
 	48: EventCommand(7, 'ObjPosMoveK'), # appears to have up to 7 params, in large part based on param[0] being < 7
 	49: EventCommand(-1, 'RenzIdouS', {}, 'executes sub-commands', renz_idou_s_var_len, True), # TODO: parse sub-commands
-	50: EventCommand(0, 'EndRenzIdouS'),
+	50: EventCommand(0, 'endRenzIdouS'),
 	51: EventCommand(-1, 'LabelJump'), # TODO: appears to be only used once (vc14), in which case param[0] is 0. If it's non-zero, it loops and seems to manipulate the cmdIdx directly
 	52: EventCommand(-1, 'PartyOpenP', {}, '', party_open_p_var_len),
 	53: EventCommand(3, 'EvFlgWait', {1: ('EVENT_FLAG', 1)}, 'Checks EVENT_FLAG(param[1]) & param[2]. Loops backwards if it does not match. param[0] controls the desired behavior: 1 = return if flag set, 0 = return if flag not set'), # TODO: add validation check that accepts only 0 or 1 for param[0]
@@ -349,7 +370,7 @@ EventComCommands = MappingProxyType({
 	69: EventCommand(1, 'FIOControll'),
 	70: EventCommand(2, 'MfreeOverlayGo'),
 	71: EventCommand(2, 'CharEvFlgSet', {1: ('CHANO', 0)}, 'Sets G2_SYS_G2_chat_flag'), # used?
-	72: EventCommand(-1, 'ObjEfctCon'), # TODO: variable to 3 or 4 params, based in part on compos
+	72: EventCommand(-1, 'ObjEfctCon', {}, '', obj_efct_con_var_len),  #param[0] == 1 seems to set an animation, whereas param[0] == 0 clears it. param[1] is an EVENT_HUMAN
 	73: EventCommand(1, 'TimWait', {}, 'Loops until compos equals the parameter'),
 	74: EventCommand(1, 'MachiStControll', {}, 'Sets bit 0 in mstatus'),
 	75: EventCommand(-1, 'LPartySet', {1: ('CHANO', 0), 2: ('CHANO', 0), 3: ('CHANO', 0), 4: ('CHANO', 0), 5: ('CHANO', 0), 6: ('CHANO', 0), 7: ('CHANO', 0)}, '', basic_count_var_len),
