@@ -15,12 +15,6 @@ class EventCom:
 		self.sp_param_tracker = sp_param_tracker
 		self.parsed_coms = parse_event_cmds(event_com_json, sp_param_tracker, EventComCommands)
 
-	def __parse(self):
-		self.parsed_coms = []
-		i = 0
-
-		# Read each command in and construct self.parsed_coms
-
 	def print_info(self, tabs: int):
 		tab_print(tabs, "eventcom:")
 		for parsed_com in self.parsed_coms:

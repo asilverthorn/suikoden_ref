@@ -6,12 +6,13 @@ class EventCommand:
 	Holds the config for an individual Event Command (whether it be eventform or eventcom)
 	num_params = -1 if it's variable length
 	"""
-	def __init__(self, num_params: int, short_name: str, special_params: dict = {}, desc: str = "", variable_len_func: Callable[[List[int], int], List[int]] | None = None):
+	def __init__(self, num_params: int, short_name: str, special_params: dict = {}, desc: str = "", variable_len_func: Callable[[List[int], int], List[int]] | None = None, embedded_coms: bool = False):
 		self.num_params = num_params
 		self.short_name = short_name
 		self.special_params = special_params
 		self.desc = desc
 		self.variable_len_func = variable_len_func
+		self.embedded_coms = embedded_coms # it has embedded commands
 
 class ParsedEventCommand:
 	"""
@@ -22,7 +23,7 @@ class ParsedEventCommand:
 		self.params = params
 		self.sp_param_tracker = sp_param_tracker
 		self.parsed_params = ""
-		self.event_cmd_map = event_cmd_map
+		self.event_cmd = event_cmd_map[cmd_id]
 		if variable_len:
 			self.parsed_params = f"(variable params... {params})"
 		else:
@@ -31,19 +32,22 @@ class ParsedEventCommand:
 				(parsed_param, i_skip) = self.get_parsed_param(i, self.params[i], params)
 				self.parsed_params += parsed_param
 				i += (1 + i_skip)
+		if self.event_cmd.embedded_coms:
+			# there are embedded commands within here, parse those out
+			# moving ahead 1 in the params because the first param is always the count
+			self.embedded_cmds = parse_event_cmds(params[1:], sp_param_tracker, event_cmd_map)
 
-	def get_parsed_param(self, param_idx: int, param: int, all_params: List[int]) -> (str, int):
+	def get_parsed_param(self, param_idx: int, param: int, all_params: List[int]) -> tuple[str, int]:
 		"""
 		Parse the parameter into a string
 		If it's a special parameter, also read the other bytes specified and get the string for it.
 
 		Returns a tuple containing the string and the number of bytes to skip ahead in the params List
 		"""
-		event_form_cmd = self.event_cmd_map[self.cmd_id]
 		default = f"{param} "
-		if(param_idx in event_form_cmd.special_params):
+		if(param_idx in self.event_cmd.special_params):
 			# it has a special parameter, use its value
-			special_param = event_form_cmd.special_params[param_idx]
+			special_param = self.event_cmd.special_params[param_idx]
 			special_param_str = special_param[0]
 			num_other_bytes = special_param[1]
 			
@@ -59,10 +63,15 @@ class ParsedEventCommand:
 			return (default, 0)
 
 	def print_info(self, tabs: int):
-		event_form_cmd = self.event_cmd_map[self.cmd_id]
-		short_name = event_form_cmd.short_name
+		short_name = self.event_cmd.short_name
 
-		if 'NOP' != short_name and 'END' != short_name: # ignore END and NOP
+		if self.event_cmd.embedded_coms:
+			# embedded commands -- print them out indented 1 more
+			tab_print(tabs, f"{short_name}({self.cmd_id}) {self.params[0]}")
+			for embedded_cmd in self.embedded_cmds:
+				embedded_cmd.print_info(tabs+1)
+		elif 'NOP' != short_name and 'END' != short_name: # ignore END and NOP
+			# just print the command with its parsed parameters
 			tab_print(tabs, f"{short_name}({self.cmd_id}) {self.parsed_params}")
 
 def parse_event_cmds(event_json: List[int], sp_param_tracker: SpecialParamsTracker, event_cmd_map: dict[int, EventCommand]) -> List[ParsedEventCommand]:

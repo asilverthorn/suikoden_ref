@@ -326,8 +326,8 @@ EventComCommands = MappingProxyType({
 	46: EventCommand(0, 'RenzokOn', {}, 'sets bit 0x40 in comst'),
 	47: EventCommand(0, 'RenzokOff', {}, 'clears bit 0x40 in comst'), #TODO: these always follow a previous call to RenzokOn. Once all variable length fields are completed, an extra validation could be added for that
 	48: EventCommand(7, 'ObjPosMoveK'), # appears to have up to 7 params, in large part based on param[0] being < 7
-	49: EventCommand(-1, 'RenzIdouS', {}, 'executes sub-commands', renz_idou_s_var_len), # TODO: parse sub-commands
-
+	49: EventCommand(-1, 'RenzIdouS', {}, 'executes sub-commands', renz_idou_s_var_len, True), # TODO: parse sub-commands
+	50: EventCommand(0, 'EndRenzIdouS'),
 	51: EventCommand(-1, 'LabelJump'), # TODO: appears to be only used once (vc14), in which case param[0] is 0. If it's non-zero, it loops and seems to manipulate the cmdIdx directly
 	52: EventCommand(-1, 'PartyOpenP', {}, '', party_open_p_var_len),
 	53: EventCommand(3, 'EvFlgWait', {1: ('EVENT_FLAG', 1)}, 'Checks EVENT_FLAG(param[1]) & param[2]. Loops backwards if it does not match. param[0] controls the desired behavior: 1 = return if flag set, 0 = return if flag not set'), # TODO: add validation check that accepts only 0 or 1 for param[0]
