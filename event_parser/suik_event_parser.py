@@ -61,8 +61,10 @@ class MapMonoBehavior:
 	def __init__(self, map_file_json: dict[str, Any], text_map: dict[int, str] | None):
 		# gather the MapEventData
 		map_event_dat_json = map_file_json["eventdata"]["mapeventdat"]
-		self.form_sp_param_tracker = SpecialParamsTracker()
-		self.com_sp_param_tracker = SpecialParamsTracker()
+		sce_msg = map_file_json["eventdata"]["sce_msg"]
+		m_name = map_file_json["m_Name"]
+		self.form_sp_param_tracker = SpecialParamsTracker(sce_msg, m_name)
+		self.com_sp_param_tracker = SpecialParamsTracker(sce_msg, m_name)
 		self.map_event_dat = []
 		for map_event_index, map_event_json in enumerate(map_event_dat_json):
 			self.map_event_dat.append(MapEventDat(map_event_index, map_event_json, self.form_sp_param_tracker, self.com_sp_param_tracker))

@@ -318,7 +318,7 @@ EventComCommands = MappingProxyType({
 	38: EventCommand(0, 'PartyOpenN'),
 	39: EventCommand(0, 'PartyCloseN'),
 	40: EventCommand(-1, 'WindowSentaku', {3: ('WINDOW_MSG', 1), 5: ('WINDOW_MSG', 1), 7: ('WINDOW_MSG', 1), 9: ('WINDOW_MSG', 1)}, 'Dialog with Choices', window_sentaku_var_len), # param[2] is the number of choices. param[3] and [4] are then the first WINDOW_MSG for the choice
-	41: EventCommand(-1, 'SentakuJump', {}, ''), # manipulates the cmdIdx directly -- script commands.txt says that it "Runs through up to 0xFFFE bytes or until it hits 0xFF looking for a match"
+	41: EventCommand(-1, 'SentakuJump', {}, ''), # TODO: figure out variable length. manipulates the cmdIdx directly -- script commands.txt says that it "Runs through up to 0xFFFE bytes or until it hits 0xFF looking for a match"
 	42: EventCommand(6, 'WarEventGo'),
 	43: EventCommand(2, 'OSpeedSet', {}, 'sets the spd for the associated EVENT_HUMAN'),
 	44: EventCommand(0, 'MapCut', {}, 'sets bit 0x2000 in syust'),
@@ -328,7 +328,7 @@ EventComCommands = MappingProxyType({
 	48: EventCommand(7, 'ObjPosMoveK'), # appears to have up to 7 params, in large part based on param[0] being < 7
 	49: EventCommand(-1, 'RenzIdouS', {}, 'executes sub-commands', renz_idou_s_var_len), # TODO: parse sub-commands
 
-	51: EventCommand(-1, 'LabelJump'), # appears to be only used once (vc14), in which case param[0] is 0. If it's non-zero, it loops and seems to manipulate the cmdIdx directly
+	51: EventCommand(-1, 'LabelJump'), # TODO: appears to be only used once (vc14), in which case param[0] is 0. If it's non-zero, it loops and seems to manipulate the cmdIdx directly
 	52: EventCommand(-1, 'PartyOpenP', {}, '', party_open_p_var_len),
 	53: EventCommand(3, 'EvFlgWait', {1: ('EVENT_FLAG', 1)}, 'Checks EVENT_FLAG(param[1]) & param[2]. Loops backwards if it does not match. param[0] controls the desired behavior: 1 = return if flag set, 0 = return if flag not set'), # TODO: add validation check that accepts only 0 or 1 for param[0]
 	54: EventCommand(2, 'WkEvFlgWait'),
@@ -349,7 +349,7 @@ EventComCommands = MappingProxyType({
 	69: EventCommand(1, 'FIOControll'),
 	70: EventCommand(2, 'MfreeOverlayGo'),
 	71: EventCommand(2, 'CharEvFlgSet', {1: ('CHANO', 0)}, 'Sets G2_SYS_G2_chat_flag'), # used?
-	72: EventCommand(-1, 'ObjEfctCon'), # variable to 3 or 4 params, based in part on compos
+	72: EventCommand(-1, 'ObjEfctCon'), # TODO: variable to 3 or 4 params, based in part on compos
 	73: EventCommand(1, 'TimWait', {}, 'Loops until compos equals the parameter'),
 	74: EventCommand(1, 'MachiStControll', {}, 'Sets bit 0 in mstatus'),
 	75: EventCommand(-1, 'LPartySet', {1: ('CHANO', 0), 2: ('CHANO', 0), 3: ('CHANO', 0), 4: ('CHANO', 0), 5: ('CHANO', 0), 6: ('CHANO', 0), 7: ('CHANO', 0)}, '', basic_count_var_len),
@@ -373,7 +373,7 @@ EventComCommands = MappingProxyType({
 	93: EventCommand(3, 'OPriSet'),
 	94: EventCommand(4, 'ObjFDIO'),
 	95: EventCommand(0, 'ResetGo'),
-	96: EventCommand(-1, 'ShopOverlayGo', {2: ("WINDOW_MSG", 1), 4: ("WINDOW_MSG", 1)}, '', shop_overlay_go_var_len), 
+	96: EventCommand(-1, 'ShopOverlayGo', {2: ("N_WINDOW_MSG", 1), 4: ("WINDOW_MSG", 1)}, '', shop_overlay_go_var_len), 
 	97: EventCommand(2, 'TkFlgSet', {0: ('T_BOX_FLAG', 1)}, 'sets t_box_flag'),
 	98: EventCommand(2, 'TkFlgOff', {0: ('T_BOX_FLAG', 1)}, 'clears t_box_flag'),
 	99: EventCommand(2, 'TwFlgSet', {0: ('MAP_IN_OUT_FLAG', 1)}, 'sets map_in_out_flag'),
@@ -395,8 +395,8 @@ EventComCommands = MappingProxyType({
 	115: EventCommand(2, 'CharaLV', {0: ('CHANO', 0)}),
 	116: EventCommand(4, 'CharaSoutaiLV', {0: ('CHANO', 0), 1: ('CHANO', 0)}),
 	117: EventCommand(2, 'SpeBgm', {}, 'sets spbgm'),
-	118: EventCommand(5, 'WindowNameSerifu', {1: ('WINDOW_MSG', 1), 3: ('WINDOW_MSG', 1)}, 'param[0] is a EVENT_HUMAN. Sets nmfno, nmno, mfno, and mno for remaining params'),
-	119: EventCommand(4, 'WindowNameHenji', {0: ('WINDOW_MSG', 1), 2: ('WINDOW_MSG', 1)}, 'Sets nmfno, nmno, mfno, and mno to param values'),
+	118: EventCommand(5, 'WindowNameSerifu', {1: ('N_WINDOW_MSG', 1), 3: ('WINDOW_MSG', 1)}, 'param[0] is a EVENT_HUMAN. Sets nmfno, nmno, mfno, and mno for remaining params'),
+	119: EventCommand(4, 'WindowNameHenji', {0: ('N_WINDOW_MSG', 1), 2: ('WINDOW_MSG', 1)}, 'Sets nmfno, nmno, mfno, and mno to param values'),
 	120: EventCommand(4, 'WindowPartySerifu', {1: ('WINDOW_MSG', 1)}),
 	121: EventCommand(1, 'BatParChg', {}, 'Sets MAPEVDAT batlno'),
 	122: EventCommand(1, 'ShipONOFF', {}, 'sets or clears flag in mstatus'),

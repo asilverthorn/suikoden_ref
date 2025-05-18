@@ -331,7 +331,11 @@ PNO = {
 }
 
 WINDOW_MSG = {
-	# these are left undefined; however, by tracking it as a "special param", it'll be counted
+	# converted programmatically -- see use of sce_msg
+}
+
+N_WINDOW_MSG = {
+    # not sure about these -- they set wincon variables named nmfno & nmno, which seem to have a different lookup than regular WINDOW_MSG (mnfo and mno)
 }
 
 MAP_MNO = {
@@ -416,31 +420,17 @@ ITEM = {
     # 80 = Base Item
 }
 
-def get_special_param_str(special_param_str: str, param: tuple[int, ...]) -> str:
-    # Don't tuplize single values (ex: "(0,)" => "0")
-    param_str = str(param)
 
-    if isinstance(param, tuple) and 1 == len(param):
-        param_str = str(param[0])
-
-    default = f"{param_str} "
-    if(special_param_str in globals()):
-        global_obj = globals()[special_param_str]
-        if(param in global_obj):
-            return f"{global_obj[param]}({param_str}) "
-        else:
-            return default
-    else:
-        print(f"WARNING: Unknown special param: {special_param_str}")
-        return default
     
 class SpecialParamsTracker:
     """
     Class used to track special param usage
     """
-    def __init__(self):
+    def __init__(self, sce_msg, m_name: str):
         # A dictionary where each key is a special_param and each value is a set of the parameter values seen
         self.special_params_used = {}
+        self.sce_msg = sce_msg
+        self.m_name = m_name
 
     def add(self, special_param_str: str, param_values: tuple[int, ...]):
         # track that it used this special param -- initialize it as a set if this is the first time it's been seen here
@@ -455,6 +445,41 @@ class SpecialParamsTracker:
         for key, value_set in self.special_params_used.items():
             sorted_values = ""
             for value in sorted(value_set):
-                sorted_values += get_special_param_str(key, value)
+                sorted_values += self.get_special_param_str(key, value)
 
             tab_print(tabs, f"{key}: {sorted_values}")
+
+    def get_window_msg_id(self, window_msg: tuple[int, int]) -> int:
+        ''' convert the given window msg tuple (should be length 2) into the message id. This is based on the m_name (basically the file name) and the sce_msg '''
+        # all messages start at this number (excluding ending, hp_book, hp_meyasu, hp_rbat, and hp_tantei, which aren't supported yet)
+        msg_id = 1_000_000_000 
+        # second character of m_name denotes the area, which is part of the msg id. a=1, b=2, ..., k=11
+        msg_id += (ord(self.m_name[1].lower()) - ord('a') + 1) * 1_000_000
+        # final two characters of m_name is also part of the msg id. 
+        msg_id += (int(self.m_name[-2:]) * 10_000)
+
+        try:
+            msg_id += self.sce_msg[window_msg[0]]['msg_index'][window_msg[1]]
+        except IndexError as e:
+            print(f" WARN: can't find an sce_msg for {window_msg}")
+        return msg_id
+
+    def get_special_param_str(self, special_param_str: str, param: tuple[int, ...]) -> str:
+        # Don't tuplize single values (ex: "(0,)" => "0")
+        param_str = str(param)
+
+        if isinstance(param, tuple) and 1 == len(param):
+            param_str = str(param[0])
+
+        default = f"{param_str} "
+        if(special_param_str == "WINDOW_MSG"):
+            return f"{self.get_window_msg_id(param)}{param_str} "
+        elif(special_param_str in globals()):
+            global_obj = globals()[special_param_str]
+            if(param in global_obj):
+                return f"{global_obj[param]}({param_str}) "
+            else:
+                return default
+        else:
+            print(f"WARNING: Unknown special param: {special_param_str}")
+            return default

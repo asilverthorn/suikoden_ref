@@ -54,7 +54,7 @@ class ParsedEventCommand:
 			param = tuple(special_param_bytes)
 				
 			self.sp_param_tracker.add(special_param_str, param)
-			return (get_special_param_str(special_param[0], param), num_other_bytes)
+			return (self.sp_param_tracker.get_special_param_str(special_param[0], param), num_other_bytes)
 		else:
 			return (default, 0)
 
