@@ -426,11 +426,12 @@ class SpecialParamsTracker:
     """
     Class used to track special param usage
     """
-    def __init__(self, sce_msg = None, m_name: str | None = None):
+    def __init__(self, sce_msg = None, m_name: str | None = None, text_tbl: dict[int, int] | None = None):
         # A dictionary where each key is a special_param and each value is a set of the parameter values seen
         self.special_params_used = {}
         self.sce_msg = sce_msg
         self.m_name = m_name
+        self.text_tbl = text_tbl
 
     def add(self, special_param_str: str, param_values: tuple[int, ...]):
         # track that it used this special param -- initialize it as a set if this is the first time it's been seen here
@@ -462,6 +463,10 @@ class SpecialParamsTracker:
             msg_id += self.sce_msg[window_msg[0]]['msg_index'][window_msg[1]]
         except IndexError as e:
             print(f" WARN: can't find an sce_msg for {window_msg}")
+
+        # Convert it if it's in the text_tbl
+        if self.text_tbl and msg_id in self.text_tbl:
+            msg_id = self.text_tbl[msg_id]
         return msg_id
 
     def get_special_param_str(self, special_param_str: str, param: tuple[int, ...]) -> str:
