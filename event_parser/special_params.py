@@ -420,6 +420,17 @@ ITEM = {
     # 80 = Base Item
 }
 
+EVENT_HUMAN = {
+    (0,): "Riou",
+    (1,): "PartyMember2",
+    (2,): "PartyMember3",
+    (3,): "PartyMember4",
+    (4,): "PartyMember5",
+    (5,): "PartyMember6",
+    (6,): "Convoy1",
+    (7,): "Convoy2",
+    # >7 indicates an eventobj -- subtract 8 from the value to determine which one
+}
 
     
 class SpecialParamsTracker:

@@ -7,7 +7,7 @@ EventFormCommands = MappingProxyType({
 	2: EventCommand(2, "py", {}, "Return 0 if `py` (player y location) < param1 or `py` > param2"),
 	3: EventCommand(2, "EvFlg_NAND", {0: ("EVENT_FLAG", 1)}, "Checks `event_flag` `!(event_flag[param1] & param2)` -- inverse logic of cmd 4"),
 	4: EventCommand(2, "EvFlg_AND", {0: ("EVENT_FLAG", 1)}, "Checks `event_flag` `event_flag[param1] & param2` -- inverse logic of cmd 3"),
-	5: EventCommand(1, "EVENT_HUMAN", {}, "Checks `EVENT_HUMAN[param1] `"),
+	5: EventCommand(1, "eventObjInteract", {0: ("EVENT_HUMAN", 0)}, "Interact with the specified eventobj"),
 	6: EventCommand(1, "ewflg", {}, "Checks `EVENTCON ewflg` against param1"),
 	7: EventCommand(1, "ewflg", {}, "Checks `EVENTCON ewflg` against param1"),
 	8: EventCommand(1, "direction", {}, "Checks `SYS_WORK pad_dat` bits, which are set based on direction; param1 has values 0-3"), #button pressed check
@@ -16,8 +16,8 @@ EventFormCommands = MappingProxyType({
 	11: EventCommand(1, "py_lt", {}, "Checks `py` < param1"),
 	12: EventCommand(1, "px_gt", {}, "Checks `px` > param1"),
 	13: EventCommand(1, "py_gt", {}, "Checks `py` > param1"),
-	14: EventCommand(3, "pnin", {}, "Checks `EVENTCON.pnin`; param1 indicates an `EVENT_HUMAN` index"),
-	15: EventCommand(3, "pnin", {}, "Checks `EVENTCON.pnin`; param1 indicates an `EVENT_HUMAN` index"),
+	14: EventCommand(3, "pnin", {0: ("EVENT_HUMAN", 0)}, "Checks `EVENTCON.pnin`; param1 indicates an `EVENT_HUMAN` index"),
+	15: EventCommand(3, "pnin", {0: ("EVENT_HUMAN", 0)}, "Checks `EVENTCON.pnin`; param1 indicates an `EVENT_HUMAN` index"),
 	16: EventCommand(2, "char_in_party", {1: ("CHANO", 0)}, "Checks if a character (by `chano`) is in party (param2). param1 controls the boolean logic: <br> param1 == 1 && in_party(param2): execute next command <br /> param1 == 1 && !in_party(param2): return 0 (stop script) <br /> param1 == 0 && in_party(param2): return 0 <br /> param1 == 0 && !in_party(param2): execute next command"),
 	#17: EventCommand(0, "N/A", {}, "Default case -- just returns 0"),
 	18: EventCommand(2, "potch", {}, "Checks if param2 * 100 <= party gold (potch)"),
@@ -38,7 +38,7 @@ EventFormCommands = MappingProxyType({
 	33: EventCommand(2, "base_lv", {}, "Checks `GAME_WORK base_lv` (Castle level) against param2. <br /> param1 == 0: return 0 if param2 != `base_lv` <br /> param1 == 1: return 0 if `base_lv` < param2 <br /> param1 == 2: return 0 if `base_lv` > param2"),
 	34: EventCommand(2, "hon_flag", {}, "Checks `GAME_WORK hon_flag`"),
 	35: EventCommand(2, "hon_flag", {}, "Checks `GAME_WORK hon_flag`"),
-	36: EventCommand(3, "EVENT_HUMAN", {}, "Checks `EVENT_HUMAN[param2]`"),
+	36: EventCommand(3, "EVENT_HUMAN", {1: ("EVENT_HUMAN", 0)}, "Checks `EVENT_HUMAN[param2]`"),
 	37: EventCommand(5, "event_time", {}, "Checks `GAME_WORK event_time. param1 = flag (0/1, inverts logic); param2 = event_time idx; param3 = seconds, param4 = minutes, param5 = hours. checks that event_time[param2] < (param3 * 60 + param4) * 60 + p5`"),
 	38: EventCommand(2, "G2_pamem_num", {}, "Checks `G2_pamem_num(0)` and `(4)`"), # possibly current vs max count? with param1 being the type of check
 	39: EventCommand(3, "G2_chara_love", {1: ("CHANO", 0)}, "Checks G2_chara_love; param1 is a mode of some sort. param2 = chano"),

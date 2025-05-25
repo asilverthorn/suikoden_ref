@@ -308,12 +308,12 @@ def obj_efct_con_var_len(event_json: List[int], param_idx: int) -> List[int]:
 
 # Static map of eventCom commands to associated info
 EventComCommands = MappingProxyType({
-	0: EventCommand(1, 'ODispOn'),
-	1: EventCommand(1, 'ODispOff'),
-	2: EventCommand(3, 'OPosSet'),
-	3: EventCommand(2, 'ODirSet'),
-	4: EventCommand(4, 'OPosMoveK'),
-	5: EventCommand(-1, 'OMoveK', {}, 'Move Character', omovek_var_len),
+	0: EventCommand(1, 'ODispOn', {0: ("EVENT_HUMAN", 0)}, 'Show the given EVENT_HUMAN (eventobj)'),
+	1: EventCommand(1, 'ODispOff', {0: ("EVENT_HUMAN", 0)}),
+	2: EventCommand(3, 'OPosSet', {0: ("EVENT_HUMAN", 0)}),
+	3: EventCommand(2, 'ODirSet', {0: ("EVENT_HUMAN", 0)}),
+	4: EventCommand(4, 'OPosMoveK', {0: ("EVENT_HUMAN", 0)}),
+	5: EventCommand(-1, 'OMoveK', {0: ("EVENT_HUMAN", 0)}, 'Move Character', omovek_var_len),
 
 	7: EventCommand(1, 'VramPosSet'), # used?
 	8: EventCommand(0, 'DmSrnMake'), #used?
@@ -348,41 +348,41 @@ EventComCommands = MappingProxyType({
 	40: EventCommand(-1, 'WindowSentaku', {3: ('WINDOW_MSG', 1), 5: ('WINDOW_MSG', 1), 7: ('WINDOW_MSG', 1), 9: ('WINDOW_MSG', 1)}, 'Dialog with Choices', window_sentaku_var_len), # param[2] is the number of choices. param[3] and [4] are then the first WINDOW_MSG for the choice
 	41: EventCommand(-1, 'SentakuJump', {}, 'Branch to the LABEL specified by parameter number that matches previous WindowSentaku choice', basic_count_var_len), 
 	42: EventCommand(6, 'WarEventGo'),
-	43: EventCommand(2, 'OSpeedSet', {}, 'sets the spd for the associated EVENT_HUMAN'),
+	43: EventCommand(2, 'OSpeedSet', {0: ("EVENT_HUMAN", 0)}, 'sets the spd for the associated EVENT_HUMAN'),
 	44: EventCommand(0, 'MapCut', {}, 'sets bit 0x2000 in syust'),
 	45: EventCommand(0, 'MapDouki', {}, 'clears bit 0x2000 in syust'),
 	46: EventCommand(0, 'RenzokOn', {}, 'sets bit 0x40 in comst'),
 	47: EventCommand(0, 'RenzokOff', {}, 'clears bit 0x40 in comst'), #TODO: these always follow a previous call to RenzokOn. Once all variable length fields are completed, an extra validation could be added for that
-	48: EventCommand(7, 'ObjPosMoveK'), # appears to have up to 7 params, in large part based on param[0] being < 7
+	48: EventCommand(7, 'ObjPosMoveK', {0: ("EVENT_HUMAN", 0)}), # appears to have up to 7 params, in large part based on param[0] being < 7
 	49: EventCommand(-1, 'RenzIdouS', {}, 'executes sub-commands', renz_idou_s_var_len, True), 
 	50: EventCommand(0, 'endRenzIdouS'),
 	51: EventCommand(1, 'LabelJump', {}, 'Jump to the specified LABEL'),
 	52: EventCommand(-1, 'PartyOpenP', {}, '', party_open_p_var_len),
 	53: EventCommand(3, 'EvFlgWait', {1: ('EVENT_FLAG', 1)}, 'Checks EVENT_FLAG(param[1]) & param[2]. Loops backwards if it does not match. param[0] controls the desired behavior: 1 = return if flag set, 0 = return if flag not set'), # TODO: add validation check that accepts only 0 or 1 for param[0]
 	54: EventCommand(2, 'WkEvFlgWait'),
-	55: EventCommand(4, 'OPosMove'),
-	56: EventCommand(7, 'ObjPosMove'),
+	55: EventCommand(4, 'OPosMove', {0: ("EVENT_HUMAN", 0)}),
+	56: EventCommand(7, 'ObjPosMove', {0: ("EVENT_HUMAN", 0)}),
 	57: EventCommand(0, 'KeyCut', {}, 'sets bit 0x8000 in syust'),
 	58: EventCommand(0, 'KeyRet', {}, 'clears bit 0x8000 in syust'),
 
-	60: EventCommand(2, 'OAniChen'), #used?
-	61: EventCommand(2, 'OSyuAniChen'),
+	60: EventCommand(2, 'OAniChen', {0: ("EVENT_HUMAN", 0)}), #used?
+	61: EventCommand(2, 'OSyuAniChen', {}, 'affects EVENT_HUMAN[0]'),
 	62: EventCommand(2, 'PartyDelIN', {1: ('CHANO', 0)}),
 	63: EventCommand(-1, 'InitPartySet', {1: ('CHANO', 0), 2: ('CHANO', 0), 3: ('CHANO', 0), 4: ('CHANO', 0), 5: ('CHANO', 0), 6: ('CHANO', 0), 7: ('CHANO', 0)}, '', basic_count_var_len),
 	64: EventCommand(0, 'InitPartyOpenN'),
 	65: EventCommand(-1, 'InitPartyOpenP', {}, '', party_open_p_var_len),
 	66: EventCommand(0, 'FieldCommandGo'), #used?
 	67: EventCommand(-1, 'WindowjikanSentaku', {3: ('WINDOW_MSG', 1), 5: ('WINDOW_MSG', 1)}, 'Dialog with Choices', window_jikan_sentaku_var_len),
-	68: EventCommand(5, 'ObjColChenge', {}, 'Sets R G B (params[2-4]) of the specified EVENT_HUMAN (params[0])'),
+	68: EventCommand(5, 'ObjColChenge', {0: ("EVENT_HUMAN", 0)}, 'Sets R G B (params[2-4]) of the specified EVENT_HUMAN (params[0])'),
 	69: EventCommand(1, 'FIOControll'),
 	70: EventCommand(2, 'MfreeOverlayGo'),
 	71: EventCommand(2, 'CharEvFlgSet', {1: ('CHANO', 0)}, 'Sets G2_SYS_G2_chat_flag'), # used?
-	72: EventCommand(-1, 'ObjEfctCon', {}, '', obj_efct_con_var_len),  #param[0] == 1 seems to set an animation, whereas param[0] == 0 clears it. param[1] is an EVENT_HUMAN
+	72: EventCommand(-1, 'ObjEfctCon', {1: ("EVENT_HUMAN", 0)}, '', obj_efct_con_var_len),  #param[0] == 1 seems to set an animation, whereas param[0] == 0 clears it. param[1] is an EVENT_HUMAN
 	73: EventCommand(1, 'TimWait', {}, 'Loops until compos equals the parameter'),
 	74: EventCommand(1, 'MachiStControll', {}, 'Sets bit 0 in mstatus'),
 	75: EventCommand(-1, 'LPartySet', {1: ('CHANO', 0), 2: ('CHANO', 0), 3: ('CHANO', 0), 4: ('CHANO', 0), 5: ('CHANO', 0), 6: ('CHANO', 0), 7: ('CHANO', 0)}, '', basic_count_var_len),
 	76: EventCommand(5, 'SrnNanameScroll'),
-	77: EventCommand(-1, 'OMoveTK', {}, 'Sets direction and speed on a EVENT_HUMAN', omovetk_var_len), #param[0] is the EVENT_HUMAN
+	77: EventCommand(-1, 'OMoveTK', {0: ("EVENT_HUMAN", 0)}, 'Sets direction and speed on a EVENT_HUMAN', omovetk_var_len), #param[0] is the EVENT_HUMAN
 	78: EventCommand(1, 'WindowFaceHyojyo', {}, 'Sets kaono -- "face number"?'),
 	79: EventCommand(1, 'WinEvFlgSet', {}, 'Sets given bit in event_flag[4][3]'),
 	80: EventCommand(1, 'WinEvFlgOff', {}, 'Clears given bit in event_flag[4][3]'),
@@ -394,12 +394,12 @@ EventComCommands = MappingProxyType({
 	86: EventCommand(5, 'SurinukeSet', {0: ('AREA_NO', 0), 1: ('TOWN_MAP', 1)}, 'Sets the escape destination for the map. Param names: s_area_no, s_town_no, s_map_no, s_x, and s_y'), # 
 	87: EventCommand(1, 'SurinukeFlg', {}, 'Updates bit in msave_st'),
 	88: EventCommand(0, 'Map16On'),
-	89: EventCommand(-1, 'AnimeChenge', {}, '', anime_chenge_var_len),
-	90: EventCommand(-1, 'OMoveAK', {}, '', omoveak_var_len),
+	89: EventCommand(-1, 'AnimeChenge', {0: ("EVENT_HUMAN", 0)}, '', anime_chenge_var_len),
+	90: EventCommand(-1, 'OMoveAK', {0: ("EVENT_HUMAN", 0)}, '', omoveak_var_len),
 	91: EventCommand(2, 'SyuAnimeChenge'),
-	92: EventCommand(5, 'WindowIroSerifu', {3: ("WINDOW_MSG", 1)}, 'Dialog'),
-	93: EventCommand(3, 'OPriSet'),
-	94: EventCommand(4, 'ObjFDIO'),
+	92: EventCommand(5, 'WindowIroSerifu', {2: ("EVENT_HUMAN", 0), 3: ("WINDOW_MSG", 1)}, 'Dialog'),
+	93: EventCommand(3, 'OPriSet', {1: ("EVENT_HUMAN", 0)}),
+	94: EventCommand(4, 'ObjFDIO', {2: ("EVENT_HUMAN", 0)}),
 	95: EventCommand(0, 'ResetGo'),
 	96: EventCommand(-1, 'ShopOverlayGo', {2: ("N_WINDOW_MSG", 1), 4: ("WINDOW_MSG", 1)}, '', shop_overlay_go_var_len), 
 	97: EventCommand(2, 'TkFlgSet', {0: ('T_BOX_FLAG', 1)}, 'sets t_box_flag'),
@@ -409,9 +409,9 @@ EventComCommands = MappingProxyType({
 	101: EventCommand(2, 'SoundCall', {0: ('SOUND', 1)}, 'Play Sounds'),
 	102: EventCommand(1, 'BatBgm'),
 	103: EventCommand(0, 'PartyRefresh', {}, 'Restore party HP/MP'),
-	104: EventCommand(3, 'OHanSet', {}, 'calls ANIME_anmSetSemiOn/Off'),
+	104: EventCommand(3, 'OHanSet', {1: ("EVENT_HUMAN", 0)}, 'calls ANIME_anmSetSemiOn/Off'),
 	105: EventCommand(3, 'SoundRead', {}, 'Start BGM - params: typ, adr, flg'),
-	106: EventCommand(2, 'OJinPosSet', {}, 'Swaps info between the two given EVENT_HUMANs'),
+	106: EventCommand(2, 'OJinPosSet', {0: ("EVENT_HUMAN", 0), 1: ("EVENT_HUMAN", 0)}, 'Swaps info between the two given EVENT_HUMANs'),
 	107: EventCommand(2, 'PartyMoney', {}, 'Calls G2_SYS_G2_party_gold'),
 	108: EventCommand(1, 'Mfree640Go'),
 	109: EventCommand(2, 'FieldCdSeek'),
@@ -423,7 +423,7 @@ EventComCommands = MappingProxyType({
 	115: EventCommand(2, 'CharaLV', {0: ('CHANO', 0)}),
 	116: EventCommand(4, 'CharaSoutaiLV', {0: ('CHANO', 0), 1: ('CHANO', 0)}),
 	117: EventCommand(2, 'SpeBgm', {}, 'sets spbgm'),
-	118: EventCommand(5, 'WindowNameSerifu', {1: ('N_WINDOW_MSG', 1), 3: ('WINDOW_MSG', 1)}, 'param[0] is a EVENT_HUMAN. Sets nmfno, nmno, mfno, and mno for remaining params'),
+	118: EventCommand(5, 'WindowNameSerifu', {0: ('EVENT_HUMAN', 0), 1: ('N_WINDOW_MSG', 1), 3: ('WINDOW_MSG', 1)}, 'param[0] is a EVENT_HUMAN. Sets nmfno, nmno, mfno, and mno for remaining params'),
 	119: EventCommand(4, 'WindowNameHenji', {0: ('N_WINDOW_MSG', 1), 2: ('WINDOW_MSG', 1)}, 'Sets nmfno, nmno, mfno, and mno to param values'),
 	120: EventCommand(4, 'WindowPartySerifu', {1: ('WINDOW_MSG', 1)}),
 	121: EventCommand(1, 'BatParChg', {}, 'Sets MAPEVDAT batlno'),
@@ -442,7 +442,7 @@ EventComCommands = MappingProxyType({
 	134: EventCommand(-1, 'OverlayPset2', {}, '', basic_count_var_len),
 	135: EventCommand(0, 'EndMemory'), # used?
 	136: EventCommand(1, 'PartyDel'), # used?
-	137: EventCommand(0, 'OnCloseResetDialog', 'clears _showResetDialog'), # used?
+	137: EventCommand(0, 'OnCloseResetDialog', 'clears _showResetDialog'), 
 	138: EventCommand(2, 'FixDoor'),
 	139: EventCommand(-1, 'PartyDelExcludingCharaNo', {1: ('CHANO', 0), 2: ('CHANO', 0), 3: ('CHANO', 0), 4: ('CHANO', 0), 5: ('CHANO', 0), 6: ('CHANO', 0), 7: ('CHANO', 0)}, '', basic_count_var_len), # appears to be unused
 	140: EventCommand(-1, 'MachiChengeM', {}, '', machi_chenge_var_len),
