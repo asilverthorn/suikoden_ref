@@ -483,7 +483,7 @@ class SpecialParamsTracker:
 
     def get_event_overlay(self, event_overlay_offset: tuple[int,]) -> str:
         ''' convert the given event overlay into its corresponding string '''
-        if None == self.overlay_func or event_overlay_offset[0] > len(self.overlay_func):
+        if None == self.overlay_func or event_overlay_offset[0] >= len(self.overlay_func):
             # no overlay function read from the machi file -- just return the offset
             return f"offset{event_overlay_offset[0]}"
         else:

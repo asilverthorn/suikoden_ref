@@ -390,7 +390,7 @@ EventComCommands = MappingProxyType({
 	82: EventCommand(0, 'WindowStopClear'),
 	83: EventCommand(2, 'EventBattleGo', {1: ('BATTLE_NO', 0)}, 'Calls EventBatlleSet(param[1], param[0])'),
 	84: EventCommand(2, 'CharaStatus', {0: ('CHANO', 0), 1: ('CHA_FLAG_MODE', 0)}, 'calls G2_cha_flag(param2, param1)'),
-	85: EventCommand(-1, 'BGfreeOverlayGo', {}, '', bg_free_overlay_go_var_len),
+	85: EventCommand(-1, 'BGfreeOverlayGo', {1: ('EVENT_OVERLAY',0)}, '', bg_free_overlay_go_var_len),
 	86: EventCommand(5, 'SurinukeSet', {0: ('AREA_NO', 0), 1: ('TOWN_MAP', 1)}, 'Sets the escape destination for the map. Param names: s_area_no, s_town_no, s_map_no, s_x, and s_y'), # 
 	87: EventCommand(1, 'SurinukeFlg', {}, 'Updates bit in msave_st'),
 	88: EventCommand(0, 'Map16On'),
@@ -401,7 +401,7 @@ EventComCommands = MappingProxyType({
 	93: EventCommand(3, 'OPriSet', {1: ("EVENT_HUMAN", 0)}),
 	94: EventCommand(4, 'ObjFDIO', {2: ("EVENT_HUMAN", 0)}),
 	95: EventCommand(0, 'ResetGo'),
-	96: EventCommand(-1, 'ShopOverlayGo', {2: ("N_WINDOW_MSG", 1), 4: ("WINDOW_MSG", 1)}, '', shop_overlay_go_var_len), 
+	96: EventCommand(-1, 'ShopOverlayGo', {1: ("EVENT_HUMAN", 0), 2: ("N_WINDOW_MSG", 1), 4: ("WINDOW_MSG", 1)}, '', shop_overlay_go_var_len), 
 	97: EventCommand(2, 'TkFlgSet', {0: ('T_BOX_FLAG', 1)}, 'sets t_box_flag'),
 	98: EventCommand(2, 'TkFlgOff', {0: ('T_BOX_FLAG', 1)}, 'clears t_box_flag'),
 	99: EventCommand(2, 'TwFlgSet', {0: ('MAP_IN_OUT_FLAG', 1)}, 'sets map_in_out_flag'),
