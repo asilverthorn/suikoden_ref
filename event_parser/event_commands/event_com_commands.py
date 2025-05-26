@@ -335,7 +335,7 @@ EventComCommands = MappingProxyType({
 	27: EventCommand(6, 'WindowFreeSize'),
 	28: EventCommand(3, 'SrnScroll'),
 	29: EventCommand(1, 'SrnBaseScroll'),
-	30: EventCommand(-1, 'OverlayGo', {}, '', overlay_go_var_len),
+	30: EventCommand(-1, 'OverlayGo', {0: ('EVENT_OVERLAY',0)}, '', overlay_go_var_len),
 	31: EventCommand(3, 'FieldCdRead', {1: ('AREA_NO', 0), 2: ('FILE_NO', 0)}, ''),
 	32: EventCommand(4, 'MemMapChenge'), # may be variable based on compos
 	33: EventCommand(-1, 'PartySet', {1: ('CHANO', 0), 2: ('CHANO', 0), 3: ('CHANO', 0), 4: ('CHANO', 0), 5: ('CHANO', 0), 6: ('CHANO', 0), 7: ('CHANO', 0)}, 'Sets required members of party', basic_count_var_len),

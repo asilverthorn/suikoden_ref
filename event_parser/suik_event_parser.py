@@ -141,7 +141,7 @@ class MapMonoBehavior:
 		sce_msg = map_file_json["eventdata"]["sce_msg"]
 		m_name = map_file_json["m_Name"]
 		self.form_sp_param_tracker = SpecialParamsTracker(sce_msg, m_name)
-		self.com_sp_param_tracker = SpecialParamsTracker(sce_msg, m_name, text_tbl)
+		self.com_sp_param_tracker = SpecialParamsTracker(sce_msg, m_name, text_tbl, map_file_json["overlay_func"])
 		self.map_event_dat = []
 		for map_event_index, map_event_json in enumerate(map_event_dat_json):
 			map_no = map_event_json["mapno"]

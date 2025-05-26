@@ -1,5 +1,6 @@
 from utils import tab_print
 from typing import List
+from g_area_func_name import G_AREA_FUNC_NAME
 
 # Special params have multiple purposes:
 #  1) they are used to translate values to text
@@ -431,18 +432,18 @@ EVENT_HUMAN = {
     (7,): "Convoy2",
     # >7 indicates an eventobj -- subtract 8 from the value to determine which one
 }
-
     
 class SpecialParamsTracker:
     """
-    Class used to track special param usage
+    Class used to translate special params into their strings and track special param usage
     """
-    def __init__(self, sce_msg = None, m_name: str | None = None, text_tbl: dict[int, int] | None = None):
+    def __init__(self, sce_msg = None, m_name: str | None = None, text_tbl: dict[int, int] | None = None, overlay_func: List[int] | None = None):
         # A dictionary where each key is a special_param and each value is a set of the parameter values seen
         self.special_params_used = {}
         self.sce_msg = sce_msg
         self.m_name = m_name
         self.text_tbl = text_tbl
+        self.overlay_func = overlay_func
 
     def add(self, special_param_str: str, param_values: tuple[int, ...]):
         # track that it used this special param -- initialize it as a set if this is the first time it's been seen here
@@ -480,6 +481,18 @@ class SpecialParamsTracker:
             msg_id = self.text_tbl[msg_id]
         return msg_id
 
+    def get_event_overlay(self, event_overlay_offset: tuple[int,]) -> str:
+        ''' convert the given event overlay into its corresponding string '''
+        if None == self.overlay_func or event_overlay_offset[0] > len(self.overlay_func):
+            # no overlay function read from the machi file -- just return the offset
+            return f"offset{event_overlay_offset[0]}"
+        else:
+            overlay_func_idx = self.overlay_func[event_overlay_offset[0]]
+            if overlay_func_idx in G_AREA_FUNC_NAME:
+                return G_AREA_FUNC_NAME[overlay_func_idx]
+            else:
+                return f"idx{overlay_func_idx}"
+    
     def get_special_param_str(self, special_param_str: str, param: tuple[int, ...]) -> str:
         # Don't tuplize single values (ex: "(0,)" => "0")
         param_str = str(param)
@@ -490,6 +503,8 @@ class SpecialParamsTracker:
         default = f"{param_str} "
         if(special_param_str == "WINDOW_MSG" and self.sce_msg and self.m_name):
             return f"{self.get_window_msg_id(param)}{param_str} "
+        elif(special_param_str == "EVENT_OVERLAY"):
+            return f"{self.get_event_overlay(param)}({param_str}) "
         elif(special_param_str in globals()):
             global_obj = globals()[special_param_str]
             if(param in global_obj):
